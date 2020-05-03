@@ -11,6 +11,7 @@ const Home = () => {
       if (loginUser) {
         setState({ user: loginUser });
       } else {
+        console.log('loginUser is null');
         setState({ user: null });
       }
     });
