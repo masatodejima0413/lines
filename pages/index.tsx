@@ -16,7 +16,24 @@ const Home = () => {
       }
     });
   });
-  return <div>{state.user ? <App /> : <Login />}</div>;
+  return (
+    <div>
+      {state.user ? <App /> : <Login />}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
+        html,
+        body {
+          padding: 0;
+          margin: 0;
+          font-family: 'Roboto', sans-serif;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+      `}</style>
+    </div>
+  );
 };
 
 export default Home;
