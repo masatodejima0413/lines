@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import fire from '../config/fire';
-import Login from '../components/Login';
+import { User } from 'firebase';
+import React, { useEffect, useState } from 'react';
 import App from '../components/App';
+import Login from '../components/Login';
+import fire from '../config/fire';
 
 const Home = () => {
-  const [state, setState] = useState<{ user: any | null }>({ user: null });
+  const [state, setState] = useState<{ user: User | null }>({ user: null });
 
   useEffect(() => {
     fire.auth().onAuthStateChanged(loginUser => {
@@ -20,12 +21,12 @@ const Home = () => {
     <div>
       {state.user ? <App /> : <Login />}
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
         html,
         body {
           padding: 0;
           margin: 0;
-          font-family: 'Roboto', sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+            Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
         }
 
         * {
