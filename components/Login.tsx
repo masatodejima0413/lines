@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import fire from '../config/fire';
+import firebase from '../libs/firebase';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    fire
+    firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(u => {
@@ -20,7 +20,7 @@ const Login = () => {
   };
 
   const handleSignup = () => {
-    fire
+    firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(u => {

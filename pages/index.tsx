@@ -1,25 +1,25 @@
-import { User } from 'firebase';
+import firebase, { User } from 'firebase';
 import React, { useEffect, useState } from 'react';
 import App from '../components/App';
 import Login from '../components/Login';
-import fire from '../config/fire';
+// import firebase from 'firebase';
 
 const Home = () => {
-  const [state, setState] = useState<{ user: User | null }>({ user: null });
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    fire.auth().onAuthStateChanged(loginUser => {
+    firebase.auth().onAuthStateChanged(loginUser => {
       if (loginUser) {
-        setState({ user: loginUser });
+        setUser(loginUser);
       } else {
         console.log('loginUser is null');
-        setState({ user: null });
+        setUser(null);
       }
     });
   });
   return (
     <div>
-      {state.user ? <App /> : <Login />}
+      {user ? <App /> : <Login />}
       <style jsx global>{`
         html,
         body {
