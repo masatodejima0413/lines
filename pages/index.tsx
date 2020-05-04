@@ -1,25 +1,35 @@
-import firebase, { User } from 'firebase';
+import firebase, { User } from 'firebase/app';
 import React, { useEffect, useState } from 'react';
-import App from '../components/App';
+import App, { IItem } from '../components/App';
 import Login from '../components/Login';
-// import firebase from 'firebase';
+import { db } from '../libs/firebase';
+
+const Items = db.collection('items');
 
 const Home = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [items, setItems] = useState<IItem[]>([]);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(loginUser => {
       if (loginUser) {
         setUser(loginUser);
+        Items.where('userId', '==', loginUser.uid)
+          .get()
+          .then(snapshot =>
+            snapshot.forEach(doc => {
+              setItems(prev => [...prev, doc.data() as IItem]);
+            }),
+          );
       } else {
         console.log('loginUser is null');
         setUser(null);
       }
     });
-  });
+  }, []);
   return (
     <div>
-      {user ? <App /> : <Login />}
+      {user ? <App items={items} setItems={setItems} /> : <Login />}
       <style jsx global>{`
         html,
         body {

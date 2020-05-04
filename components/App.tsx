@@ -1,10 +1,10 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import React, { useState } from 'react';
 import { db } from '../libs/firebase';
 
 const Items = db.collection('items');
 
-interface IItem {
+export interface IItem {
   createdAt: firebase.firestore.Timestamp;
   text: string;
   userId: string;
@@ -20,9 +20,8 @@ const handleLogout = () => {
   firebase.auth().signOut();
 };
 
-const App = () => {
+const App = ({ items, setItems }) => {
   const [val, setVal] = useState('');
-  const [items, setItems] = useState<IItem[]>([]);
 
   const submit = () => {
     // setsRef
