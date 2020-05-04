@@ -3,14 +3,14 @@ import fire, { db } from '../config/fire';
 
 // TODO: Might be good to have class for item
 interface IItem {
-  text: string;
+  parentItem: string;
   createdAt: Date;
   childItems: string[];
 }
-
-const createItem = (text: string) => ({
-  text,
-  createdAt: new Date(),
+let createdAt;
+const createItem = (parentItem: string) => ({
+  parentItem,
+  createdAt,
   childItems: ['', '', '', ''],
 });
 
@@ -21,12 +21,15 @@ const handleLogout = () => {
 const App = () => {
   const [val, setVal] = useState('');
   const [items, setItems] = useState<IItem[]>([]);
+  const setsRef = db
+    .collection('users')
+    .doc(fire.auth().currentUser.uid)
+    .collection('sets');
 
   const submit = () => {
-    db.collection('users')
-      .doc(fire.auth().currentUser.uid)
-      .collection('sets')
-      .doc()
+    createdAt = new Date();
+    setsRef
+      .doc(createdAt.toISOString())
       .set(createItem(val))
       .then(function() {
         console.log('Document successfully written!');
@@ -42,6 +45,8 @@ const App = () => {
     let newItems = [...items];
     newItems[i].childItems[index] = e.target.value;
     setItems(newItems);
+    // arrayの単一要素のupdateはできない
+    setsRef.doc(items[i].createdAt.toISOString()).update({ childItems: newItems[i].childItems });
   };
 
   return (
@@ -52,7 +57,7 @@ const App = () => {
       </button>
       {items.map((item, i) => (
         <>
-          <h1 key={item.createdAt.toISOString()}>{item.text}</h1>
+          <h1 key={item.createdAt.toISOString()}>{item.parentItem}</h1>
           {item.childItems.map((childItem, index) => (
             <input
               type="text"
