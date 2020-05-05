@@ -1,53 +1,51 @@
+import firebase from 'firebase/app';
 import React, { useState } from 'react';
-import fire, { db } from '../config/fire';
+import { db } from '../libs/firebase';
 
-// TODO: Might be good to have class for item
-interface IItem {
-  parentItem: string;
-  createdAt: Date;
-  childItems: string[];
+const Items = db.collection('items');
+
+export interface IItem {
+  createdAt: firebase.firestore.Timestamp;
+  text: string;
+  userId: string;
 }
-let createdAt;
-const createItem = (parentItem: string) => ({
-  parentItem,
-  createdAt,
-  childItems: ['', '', '', ''],
+
+const createItem = (text: string) => ({
+  createdAt: firebase.firestore.Timestamp.now(),
+  text,
+  userId: firebase.auth().currentUser.uid,
 });
 
 const handleLogout = () => {
-  fire.auth().signOut();
+  firebase.auth().signOut();
 };
 
-const App = () => {
+const App = ({ items, setItems }) => {
   const [val, setVal] = useState('');
-  const [items, setItems] = useState<IItem[]>([]);
-  const setsRef = db
-    .collection('users')
-    .doc(fire.auth().currentUser.uid)
-    .collection('sets');
 
   const submit = () => {
-    createdAt = new Date();
-    setsRef
-      .doc(createdAt.toISOString())
-      .set(createItem(val))
-      .then(function() {
-        console.log('Document successfully written!');
-      })
-      .catch(function(error) {
-        console.error('Error writing document: ', error);
-      });
-    setItems(prev => [...prev, createItem(val)]);
+    // setsRef
+    //   .doc(createdAt.toISOString())
+    //   .set(createItem(val))
+    //   .then(function() {
+    //     console.log('Document successfully written!');
+    //   })
+    //   .catch(function(error) {
+    //     console.error('Error writing document: ', error);
+    //   });
+    const newItem = createItem(val);
+    setItems(prev => [...prev, newItem]);
+    Items.add(newItem);
     setVal('');
   };
 
-  const changeChildItem = (e, i, index) => {
-    let newItems = [...items];
-    newItems[i].childItems[index] = e.target.value;
-    setItems(newItems);
-    // arrayの単一要素のupdateはできない
-    setsRef.doc(items[i].createdAt.toISOString()).update({ childItems: newItems[i].childItems });
-  };
+  // const changeChildItem = (e, i, index) => {
+  //   let newItems = [...items];
+  //   newItems[i].childItems[index] = e.target.value;
+  //   setItems(newItems);
+  //   // arrayの単一要素のupdateはできない
+  //   setsRef.doc(items[i].createdAt.toISOString()).update({ childItems: newItems[i].childItems });
+  // };
 
   return (
     <div>
@@ -55,18 +53,8 @@ const App = () => {
       <button type="button" onClick={submit} disabled={!val}>
         ADD
       </button>
-      {items.map((item, i) => (
-        <>
-          <h1 key={item.createdAt.toISOString()}>{item.parentItem}</h1>
-          {item.childItems.map((childItem, index) => (
-            <input
-              type="text"
-              key={index}
-              value={childItem}
-              onChange={e => changeChildItem(e, i, index)}
-            />
-          ))}
-        </>
+      {items.map(item => (
+        <h1 key={item.createdAt.toMillis()}>{item.text}</h1>
       ))}
       <hr />
       <div onClick={handleLogout}>Logout</div>
