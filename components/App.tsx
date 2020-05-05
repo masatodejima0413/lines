@@ -1,5 +1,5 @@
 import firebase from 'firebase/app';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db } from '../libs/firebase';
 
 const Items = db.collection('items');
@@ -8,6 +8,7 @@ export interface IItem {
   createdAt: firebase.firestore.Timestamp;
   text: string;
   userId: string;
+  key: string;
 }
 
 const createItem = (text: string) => ({
@@ -16,12 +17,13 @@ const createItem = (text: string) => ({
   userId: firebase.auth().currentUser.uid,
 });
 
-const handleLogout = () => {
-  firebase.auth().signOut();
-};
-
 const App = ({ items, setItems }) => {
   const [val, setVal] = useState('');
+
+  const handleLogout = () => {
+    firebase.auth().signOut();
+    setItems([]);
+  };
 
   const submit = () => {
     // setsRef
@@ -34,9 +36,16 @@ const App = ({ items, setItems }) => {
     //     console.error('Error writing document: ', error);
     //   });
     const newItem = createItem(val);
-    setItems(prev => [...prev, newItem]);
-    Items.add(newItem);
+    Items.add(newItem).then(docRef => {
+      setItems(prev => [...prev, { ...newItem, key: docRef.id }]);
+    });
     setVal('');
+  };
+
+  const deleteItem = key => {
+    const newItems = [...items].filter(newItem => newItem.key !== key);
+    setItems(newItems);
+    Items.doc(key).delete();
   };
 
   // const changeChildItem = (e, i, index) => {
@@ -54,7 +63,12 @@ const App = ({ items, setItems }) => {
         ADD
       </button>
       {items.map(item => (
-        <h1 key={item.createdAt.toMillis()}>{item.text}</h1>
+        <>
+          <h1 key={item.key}>{item.text}</h1>
+          <button type="button" onClick={() => deleteItem(item.key)}>
+            delete
+          </button>
+        </>
       ))}
       <hr />
       <div onClick={handleLogout}>Logout</div>
