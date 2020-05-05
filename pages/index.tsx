@@ -42,6 +42,9 @@ const Home = () => {
         * {
           box-sizing: border-box;
         }
+        *:focus {
+          outline: 0;
+        }
       `}</style>
     </div>
   );
