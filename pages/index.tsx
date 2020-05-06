@@ -1,14 +1,15 @@
 import firebase, { User } from 'firebase/app';
 import React, { useEffect, useState } from 'react';
-import App, { IItem } from '../components/App';
+import App from '../components/App';
 import Login from '../components/Login';
 import { db } from '../libs/firebase';
+import Item from '../data/data_model/item';
 
 const Items = db.collection('items');
 
 const Home = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [items, setItems] = useState<IItem[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(loginUser => {
@@ -18,7 +19,7 @@ const Home = () => {
           .get()
           .then(snapshot =>
             snapshot.forEach(doc => {
-              setItems(prev => [...prev, doc.data() as IItem]);
+              setItems(prev => [...prev, doc.data() as Item]);
             }),
           );
       } else {
