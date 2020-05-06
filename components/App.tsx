@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
 import React from 'react';
-import uuid from 'react-uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { db } from '../libs/firebase';
 
 const Items = db.collection('items');
@@ -10,6 +10,7 @@ export interface IItem {
   text: string;
   userId: string;
   id: string;
+  children: string[];
 }
 
 const createItem = (id: string) => ({
@@ -17,6 +18,7 @@ const createItem = (id: string) => ({
   createdAt: firebase.firestore.Timestamp.now(),
   text: '',
   userId: firebase.auth().currentUser.uid,
+  children: [],
 });
 
 const App = ({ items, setItems }) => {
@@ -26,9 +28,9 @@ const App = ({ items, setItems }) => {
   };
 
   const addItem = () => {
-    const id = uuid();
+    const id = uuidv4();
     const newItem = createItem(id);
-    setItems(prev => [...prev, newItem as IItem]);
+    setItems(prev => [...prev, newItem]);
     Items.doc(id)
       .set(createItem(id))
       .then(() => console.log('Successfully added.'))
@@ -52,6 +54,36 @@ const App = ({ items, setItems }) => {
     setItems(newItems);
   };
 
+  const addChild = id => {
+    const newItems = items.map(newItem => {
+      if (newItem.id === id) {
+        newItem.children.push('');
+      }
+      return newItem;
+    });
+    setItems(newItems);
+  };
+
+  const deleteChild = (index, id) => {
+    const newItems = items.map(newItem => {
+      if (newItem.id === id) {
+        newItem.children.splice(index, 1);
+      }
+      return newItem;
+    });
+    setItems(newItems);
+  };
+
+  const updateChild = (e, index, id) => {
+    const newItems = items.map(newItem => {
+      if (newItem.id === id) {
+        newItem.children[index] = e.target.value;
+      }
+      return newItem;
+    });
+    setItems(newItems);
+  };
+
   return (
     <div className="container">
       <div className="main-wrapper">
@@ -60,10 +92,28 @@ const App = ({ items, setItems }) => {
         </button>
         {items.map(item => (
           <div className="item" key={item.id}>
-            <input type="text" value={item.text} onChange={e => updateItem(e, item.id)} />
             <button type="button" onClick={() => deleteItem(item.id)}>
               -
             </button>
+            <input type="text" size={15} value={item.text} onChange={e => updateItem(e, item.id)} />
+            <button type="button" onClick={() => addChild(item.id)}>
+              +
+            </button>
+            <div className="children-wrapper">
+              {item.children.length > 0 &&
+                item.children.map((child, index) => (
+                  <div key={index}>
+                    <input
+                      type="text"
+                      value={child}
+                      onChange={e => updateChild(e, index, item.id)}
+                    />
+                    <button type="button" onClick={() => deleteChild(index, item.id)}>
+                      -
+                    </button>
+                  </div>
+                ))}
+            </div>
           </div>
         ))}
         <hr />
@@ -86,7 +136,6 @@ const App = ({ items, setItems }) => {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          align-items: center;
           box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
         }
         .add {
@@ -97,21 +146,37 @@ const App = ({ items, setItems }) => {
           cursor: pointer;
         }
         .item {
-          border-left: 0.5rem solid #c4c4c4;
           margin-bottom: 1.5rem;
+          display: flex;
+          align-items: center;
+          border-left: 0.5rem solid #c4c4c4;
         }
         .item input {
           height: 2.5rem;
-          border: none;
           font-size: 2rem;
           margin: 1rem;
+          border: none;
         }
         .item button {
           border: none;
           font-size: 1.5rem;
           cursor: pointer;
         }
+        .children-wrapper {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .children-wrapper input {
+          font-size: 1rem;
+          height: 1.2rem;
+          border: none;
+          padding-left: 0.5rem;
+          border-left: 0.2rem solid #c4c4c4;
+          margin: 0.1rem;
+        }
         .logout {
+          margin: 0 auto;
           background-color: #c4c4c4;
           color: white;
           border: 2px solid #c4c4c4;
