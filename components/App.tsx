@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
-import React, { useState } from 'react';
+import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { db } from '../libs/firebase';
 
 const Items = db.collection('items');
@@ -8,73 +9,109 @@ export interface IItem {
   createdAt: firebase.firestore.Timestamp;
   text: string;
   userId: string;
-  key: string;
+  id: string;
 }
 
-const createItem = () => ({
+const createItem = (id: string) => ({
+  id,
   createdAt: firebase.firestore.Timestamp.now(),
   text: '',
   userId: firebase.auth().currentUser.uid,
 });
 
 const App = ({ items, setItems }) => {
-  const [val, setVal] = useState('');
-
   const handleLogout = () => {
     firebase.auth().signOut();
     setItems([]);
   };
 
-  const submit = () => {
-    const newItem = createItem();
-    Items.add(newItem).then(docRef => {
-      setItems(prev => [...prev, { ...newItem, key: docRef.id }]);
-    });
-    setVal('');
+  const addItem = () => {
+    const id = uuidv4();
+    const newItem = createItem(id);
+    setItems(prev => [...prev, newItem]);
+    Items.doc(id)
+      .set(createItem(id))
+      .then(() => console.log('Successfully added.'))
+      .catch(() => console.warn('Failded to add.'));
   };
 
-  const deleteItem = key => {
-    const newItems = [...items].filter(newItem => newItem.key !== key);
+  const deleteItem = id => {
+    const newItems = items.filter(newItem => newItem.id !== id);
     setItems(newItems);
-    Items.doc(key).delete();
+    Items.doc(id).delete();
   };
 
-  // const changeChildItem = (e, i, index) => {
-  //   let newItems = [...items];
-  //   newItems[i].childItems[index] = e.target.value;
-  //   setItems(newItems);
-  //   // arrayの単一要素のupdateはできない
-  //   setsRef.doc(items[i].createdAt.toISOString()).update({ childItems: newItems[i].childItems });
-  // };
-
-  const handleChange = (e, key) => {
-    const newItems = [...items].map(newItem => {
-      if (newItem.key === key) {
+  const updateItem = (e, id) => {
+    const newItems = items.map(newItem => {
+      if (newItem.id === id) {
         newItem.text = e.target.value;
-        Items.doc(key).update({ text: e.target.value });
+        Items.doc(id).update({ text: e.target.value });
       }
       return newItem;
     });
     setItems(newItems);
   };
 
+  // const addChild = id => {
+  //   const newItems = items.map(newItem => {
+  //     if (newItem.id === id) {
+  //       newItem.children.push('');
+  //     }
+  //     return newItem;
+  //   });
+  //   setItems(newItems);
+  // };
+
+  // const deleteChild = (index, id) => {
+  //   const newItems = items.map(newItem => {
+  //     if (newItem.id === id) {
+  //       newItem.children.splice(index, 1);
+  //     }
+  //     return newItem;
+  //   });
+  //   setItems(newItems);
+  // };
+
+  // const updateChild = (e, index, id) => {
+  //   const newItems = items.map(newItem => {
+  //     if (newItem.id === id) {
+  //       newItem.children[index] = e.target.value;
+  //     }
+  //     return newItem;
+  //   });
+  //   setItems(newItems);
+  // };
+
   return (
     <div className="container">
       <div className="main-wrapper">
-        <button className="add" type="button" onClick={submit}>
+        <button className="add" type="button" onClick={addItem}>
           +
         </button>
         {items.map(item => (
-          <div className="item">
-            <input
-              type="text"
-              key={item.key}
-              value={item.text}
-              onChange={e => handleChange(e, item.key)}
-            />
-            <button type="button" onClick={() => deleteItem(item.key)}>
+          <div className="item" key={item.id}>
+            <button type="button" onClick={() => deleteItem(item.id)}>
               -
             </button>
+            <input type="text" size={15} value={item.text} onChange={e => updateItem(e, item.id)} />
+            {/* <button type="button" onClick={() => addChild(item.id)}>
+              +
+            </button>
+            <div className="children-wrapper">
+              {item.children.length > 0 &&
+                item.children.map((child, index) => (
+                  <div key={index}>
+                    <input
+                      type="text"
+                      value={child}
+                      onChange={e => updateChild(e, index, item.id)}
+                    />
+                    <button type="button" onClick={() => deleteChild(index, item.id)}>
+                      -
+                    </button>
+                  </div>
+                ))}
+            </div> */}
           </div>
         ))}
         <hr />
@@ -97,7 +134,6 @@ const App = ({ items, setItems }) => {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          align-items: center;
           box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
         }
         .add {
@@ -108,21 +144,37 @@ const App = ({ items, setItems }) => {
           cursor: pointer;
         }
         .item {
-          border-left: 0.5rem solid #c4c4c4;
           margin-bottom: 1.5rem;
+          display: flex;
+          align-items: center;
+          border-left: 0.5rem solid #c4c4c4;
         }
         .item input {
           height: 2.5rem;
-          border: none;
           font-size: 2rem;
           margin: 1rem;
+          border: none;
         }
         .item button {
           border: none;
           font-size: 1.5rem;
           cursor: pointer;
         }
+        .children-wrapper {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .children-wrapper input {
+          font-size: 1rem;
+          height: 1.2rem;
+          border: none;
+          padding-left: 0.5rem;
+          border-left: 0.2rem solid #c4c4c4;
+          margin: 0.1rem;
+        }
         .logout {
+          margin: 0 auto;
           background-color: #c4c4c4;
           color: white;
           border: 2px solid #c4c4c4;

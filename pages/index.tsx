@@ -18,7 +18,7 @@ const Home = () => {
           .get()
           .then(snapshot =>
             snapshot.forEach(doc => {
-              setItems(prev => [...prev, { ...doc.data(), key: doc.id } as IItem]);
+              setItems(prev => [...prev, doc.data() as IItem]);
             }),
           );
       } else {
