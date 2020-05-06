@@ -10,7 +10,6 @@ export interface IItem {
   text: string;
   userId: string;
   id: string;
-  children: string[];
 }
 
 const createItem = (id: string) => ({
@@ -18,7 +17,6 @@ const createItem = (id: string) => ({
   createdAt: firebase.firestore.Timestamp.now(),
   text: '',
   userId: firebase.auth().currentUser.uid,
-  children: [],
 });
 
 const App = ({ items, setItems }) => {
@@ -54,35 +52,35 @@ const App = ({ items, setItems }) => {
     setItems(newItems);
   };
 
-  const addChild = id => {
-    const newItems = items.map(newItem => {
-      if (newItem.id === id) {
-        newItem.children.push('');
-      }
-      return newItem;
-    });
-    setItems(newItems);
-  };
+  // const addChild = id => {
+  //   const newItems = items.map(newItem => {
+  //     if (newItem.id === id) {
+  //       newItem.children.push('');
+  //     }
+  //     return newItem;
+  //   });
+  //   setItems(newItems);
+  // };
 
-  const deleteChild = (index, id) => {
-    const newItems = items.map(newItem => {
-      if (newItem.id === id) {
-        newItem.children.splice(index, 1);
-      }
-      return newItem;
-    });
-    setItems(newItems);
-  };
+  // const deleteChild = (index, id) => {
+  //   const newItems = items.map(newItem => {
+  //     if (newItem.id === id) {
+  //       newItem.children.splice(index, 1);
+  //     }
+  //     return newItem;
+  //   });
+  //   setItems(newItems);
+  // };
 
-  const updateChild = (e, index, id) => {
-    const newItems = items.map(newItem => {
-      if (newItem.id === id) {
-        newItem.children[index] = e.target.value;
-      }
-      return newItem;
-    });
-    setItems(newItems);
-  };
+  // const updateChild = (e, index, id) => {
+  //   const newItems = items.map(newItem => {
+  //     if (newItem.id === id) {
+  //       newItem.children[index] = e.target.value;
+  //     }
+  //     return newItem;
+  //   });
+  //   setItems(newItems);
+  // };
 
   return (
     <div className="container">
@@ -96,7 +94,7 @@ const App = ({ items, setItems }) => {
               -
             </button>
             <input type="text" size={15} value={item.text} onChange={e => updateItem(e, item.id)} />
-            <button type="button" onClick={() => addChild(item.id)}>
+            {/* <button type="button" onClick={() => addChild(item.id)}>
               +
             </button>
             <div className="children-wrapper">
@@ -113,7 +111,7 @@ const App = ({ items, setItems }) => {
                     </button>
                   </div>
                 ))}
-            </div>
+            </div> */}
           </div>
         ))}
         <hr />
