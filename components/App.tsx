@@ -1,27 +1,13 @@
 import firebase from 'firebase/app';
 import React, { ChangeEvent } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { db } from '../libs/firebase';
+import Item from '../data/data_model/item';
 
 const Items = db.collection('items');
 
-export interface IItem {
-  createdAt: firebase.firestore.Timestamp;
-  text: string;
-  userId: string;
-  id: string;
-}
-
-const createItem = (id: string): IItem => ({
-  id,
-  createdAt: firebase.firestore.Timestamp.now(),
-  text: '',
-  userId: firebase.auth().currentUser.uid,
-});
-
 interface IProps {
-  items: IItem[];
-  setItems: React.Dispatch<React.SetStateAction<IItem[]>>;
+  items: Item[];
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
 }
 
 const App = ({ items, setItems }: IProps) => {
@@ -31,13 +17,9 @@ const App = ({ items, setItems }: IProps) => {
   };
 
   const addItem = () => {
-    const id = uuidv4();
-    const newItem = createItem(id);
+    const newItem = new Item({});
     setItems(prev => [...prev, newItem]);
-    Items.doc(id)
-      .set(createItem(id))
-      .then(() => console.log('Successfully added.'))
-      .catch(() => console.warn('Failed to add.'));
+    newItem.addDb();
   };
 
   const deleteItem = (id: string) => {
@@ -48,7 +30,7 @@ const App = ({ items, setItems }: IProps) => {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
     const text = e.target.value;
-    const updatedItems = items.map(i => (i.id === id ? { ...i, text } : i));
+    const updatedItems = items.map(i => (i.id === id ? new Item({ ...i, text }) : i));
     setItems(updatedItems);
     Items.doc(id).update({ text });
   };
