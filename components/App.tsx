@@ -1,55 +1,38 @@
 import firebase from 'firebase/app';
-import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React, { ChangeEvent } from 'react';
 import { db } from '../libs/firebase';
+import Item from '../data/data_model/item';
 
 const Items = db.collection('items');
 
-export interface IItem {
-  createdAt: firebase.firestore.Timestamp;
-  text: string;
-  userId: string;
-  id: string;
+interface IProps {
+  items: Item[];
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
 }
 
-const createItem = (id: string) => ({
-  id,
-  createdAt: firebase.firestore.Timestamp.now(),
-  text: '',
-  userId: firebase.auth().currentUser.uid,
-});
-
-const App = ({ items, setItems }) => {
+const App = ({ items, setItems }: IProps) => {
   const handleLogout = () => {
     firebase.auth().signOut();
     setItems([]);
   };
 
   const addItem = () => {
-    const id = uuidv4();
-    const newItem = createItem(id);
+    const newItem = new Item({});
     setItems(prev => [...prev, newItem]);
-    Items.doc(id)
-      .set(createItem(id))
-      .then(() => console.log('Successfully added.'))
-      .catch(() => console.warn('Failded to add.'));
+    newItem.addDb();
   };
 
-  const deleteItem = id => {
-    const newItems = items.filter(newItem => newItem.id !== id);
-    setItems(newItems);
+  const deleteItem = (id: string) => {
+    const restItems = items.filter(item => item.id !== id);
+    setItems(restItems);
     Items.doc(id).delete();
   };
 
-  const updateItem = (e, id) => {
-    const newItems = items.map(newItem => {
-      if (newItem.id === id) {
-        newItem.text = e.target.value;
-        Items.doc(id).update({ text: e.target.value });
-      }
-      return newItem;
-    });
-    setItems(newItems);
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
+    const text = e.target.value;
+    const updatedItems = items.map(i => (i.id === id ? new Item({ ...i, text }) : i));
+    setItems(updatedItems);
+    Items.doc(id).update({ text });
   };
 
   // const addChild = id => {
@@ -93,25 +76,12 @@ const App = ({ items, setItems }) => {
             <button type="button" onClick={() => deleteItem(item.id)}>
               -
             </button>
-            <input type="text" size={15} value={item.text} onChange={e => updateItem(e, item.id)} />
-            {/* <button type="button" onClick={() => addChild(item.id)}>
-              +
-            </button>
-            <div className="children-wrapper">
-              {item.children.length > 0 &&
-                item.children.map((child, index) => (
-                  <div key={index}>
-                    <input
-                      type="text"
-                      value={child}
-                      onChange={e => updateChild(e, index, item.id)}
-                    />
-                    <button type="button" onClick={() => deleteChild(index, item.id)}>
-                      -
-                    </button>
-                  </div>
-                ))}
-            </div> */}
+            <input
+              type="text"
+              size={15}
+              value={item.text}
+              onChange={e => handleChange(e, item.id)}
+            />
           </div>
         ))}
         <hr />
