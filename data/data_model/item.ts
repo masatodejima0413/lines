@@ -37,6 +37,7 @@ export default class Item {
   }
 
   update(text: string) {
+    this.text = text;
     Items.doc(this.id).update({ text, updatedAt: firebase.firestore.Timestamp.now() });
   }
 

@@ -17,11 +17,13 @@ const Home = () => {
         setUser(loginUser);
         Items.where('userId', '==', loginUser.uid)
           .get()
-          .then(snapshot =>
+          .then(snapshot => {
+            const userItems = [];
             snapshot.forEach(doc => {
-              setItems(prev => [...prev, doc.data() as Item]);
-            }),
-          );
+              userItems.push(new Item(doc.data()));
+            });
+            setItems(userItems);
+          });
       } else {
         console.log('loginUser is null');
         setUser(null);

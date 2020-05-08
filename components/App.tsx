@@ -1,6 +1,5 @@
 import firebase from 'firebase/app';
 import React, { ChangeEvent } from 'react';
-import { Items } from '../data/collections';
 import Item from '../data/data_model/item';
 
 interface IProps {
@@ -21,16 +20,27 @@ const App = ({ items, setItems }: IProps) => {
   };
 
   const deleteItem = (id: string) => {
-    const restItems = items.filter(item => item.id !== id);
+    const restItems = [];
+    items.forEach(item => {
+      if (item.id === id) {
+        item.delete();
+        return;
+      }
+      restItems.push(item);
+    });
     setItems(restItems);
-    Items.doc(id).delete();
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
     const text = e.target.value;
-    const updatedItems = items.map(i => (i.id === id ? new Item({ ...i, text }) : i));
+    const updatedItems = items.map(item => {
+      if (item.id === id) {
+        item.update(text);
+        return item;
+      }
+      return item;
+    });
     setItems(updatedItems);
-    Items.doc(id).update({ text });
   };
 
   // const addChild = id => {
