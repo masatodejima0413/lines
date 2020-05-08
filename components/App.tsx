@@ -19,7 +19,7 @@ const App = ({ items, setItems }: IProps) => {
   const addItem = () => {
     const newItem = new Item({});
     setItems(prev => [...prev, newItem]);
-    newItem.addDb();
+    newItem.save();
   };
 
   const deleteItem = (id: string) => {
