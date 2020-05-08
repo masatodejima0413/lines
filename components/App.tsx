@@ -1,9 +1,7 @@
 import firebase from 'firebase/app';
 import React, { ChangeEvent } from 'react';
-import { db } from '../libs/firebase';
+import { Items } from '../data/collections';
 import Item from '../data/data_model/item';
-
-const Items = db.collection('items');
 
 interface IProps {
   items: Item[];
