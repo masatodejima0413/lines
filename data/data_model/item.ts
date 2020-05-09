@@ -1,8 +1,6 @@
 import firebase from 'firebase/app';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../libs/firebase';
-
-const Items = db.collection('items');
+import { Items } from '../collections';
 
 export default class Item {
   id: string;
@@ -31,11 +29,20 @@ export default class Item {
     this.userId = userId;
   }
 
-  addDb() {
+  save() {
     Items.doc(this.id)
       .set(itemConverter.toFirestore(this))
       .then(() => console.log('Successfully added new item.'))
-      .catch(() => console.warn('Failed to add item.'));
+      .catch(() => console.error('Failed to add item.'));
+  }
+
+  update(text: string) {
+    this.text = text;
+    Items.doc(this.id).update({ text, updatedAt: firebase.firestore.Timestamp.now() });
+  }
+
+  delete() {
+    Items.doc(this.id).delete();
   }
 }
 
