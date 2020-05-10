@@ -1,46 +1,49 @@
 import firebase from 'firebase/app';
 import React, { ChangeEvent } from 'react';
+import View from '../data/data_model/view';
 import Item from '../data/data_model/item';
 
 interface IProps {
-  items: Item[];
-  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  currentView: View;
+  setCurrentView: (updatedView: View) => void;
 }
 
-const App = ({ items, setItems }: IProps) => {
+const App = ({ currentView, setCurrentView }: IProps) => {
   const handleLogout = () => {
     firebase.auth().signOut();
-    setItems([]);
   };
 
   const addItem = () => {
-    const newItem = new Item({});
-    setItems(prev => [...prev, newItem]);
-    newItem.save();
+    const newItem = new Item({ viewId: currentView.id });
+    console.log('called');
+    const newView = currentView.addItem(newItem.id);
+    setCurrentView(newView);
+    // setItems(prev => [...prev, newItem]);
+    // newItem.save();
   };
 
   const deleteItem = (id: string) => {
-    const restItems = [];
-    items.forEach(item => {
-      if (item.id === id) {
-        item.delete();
-        return;
-      }
-      restItems.push(item);
-    });
-    setItems(restItems);
+    // const restItems = [];
+    // items.forEach(item => {
+    //   if (item.id === id) {
+    //     item.delete();
+    //     return;
+    //   }
+    //   restItems.push(item);
+    // });
+    // setItems(restItems);
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
-    const text = e.target.value;
-    const updatedItems = items.map(item => {
-      if (item.id === id) {
-        item.update(text);
-        return item;
-      }
-      return item;
-    });
-    setItems(updatedItems);
+    // const text = e.target.value;
+    // const updatedItems = items.map(item => {
+    //   if (item.id === id) {
+    //     item.update(text);
+    //     return item;
+    //   }
+    //   return item;
+    // });
+    // setItems(updatedItems);
   };
 
   // const addChild = id => {
@@ -79,19 +82,7 @@ const App = ({ items, setItems }: IProps) => {
         <button className="add" type="button" onClick={addItem}>
           +
         </button>
-        {items.map(item => (
-          <div className="item" key={item.id}>
-            <button type="button" onClick={() => deleteItem(item.id)}>
-              -
-            </button>
-            <input
-              type="text"
-              size={15}
-              value={item.text}
-              onChange={e => handleChange(e, item.id)}
-            />
-          </div>
-        ))}
+        {currentView && currentView.sets.length}
         <hr />
         <div className="logout" onClick={handleLogout}>
           Logout

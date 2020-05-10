@@ -2,27 +2,30 @@ import firebase, { User } from 'firebase/app';
 import React, { useEffect, useState } from 'react';
 import App from '../components/App';
 import Login from '../components/Login';
-import { db } from '../libs/firebase';
 import Item from '../data/data_model/item';
-
-const Items = db.collection('items');
+import { Views } from '../data/collections';
+import View, { viewConverter } from '../data/data_model/view';
 
 const Home = () => {
+  const [currentView, setCurrentView] = useState<View>();
   const [user, setUser] = useState<User | null>(null);
-  const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(loginUser => {
       if (loginUser) {
         setUser(loginUser);
-        Items.where('userId', '==', loginUser.uid)
+        Views.where('userId', '==', loginUser.uid)
+          .limit(1)
           .get()
           .then(snapshot => {
-            const userItems = [];
+            if (snapshot.empty) {
+              const newView = new View({});
+              setCurrentView(newView);
+            }
             snapshot.forEach(doc => {
-              userItems.push(new Item(doc.data()));
+              const view = viewConverter.fromFirestore(doc);
+              setCurrentView(view);
             });
-            setItems(userItems);
           });
       } else {
         console.log('loginUser is null');
@@ -32,7 +35,7 @@ const Home = () => {
   }, []);
   return (
     <div>
-      {user ? <App items={items} setItems={setItems} /> : <Login />}
+      {user ? <App currentView={currentView} setCurrentView={setCurrentView} /> : <Login />}
       <style jsx global>{`
         html,
         body {
