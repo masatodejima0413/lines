@@ -2,12 +2,13 @@ import firebase, { User } from 'firebase/app';
 import React, { useEffect, useState } from 'react';
 import App from '../components/App';
 import Login from '../components/Login';
-import Item from '../data/data_model/item';
-import { Views } from '../data/collections';
+import { Items, Views } from '../data/collections';
+import Item, { itemConverter } from '../data/data_model/item';
 import View, { viewConverter } from '../data/data_model/view';
 
 const Home = () => {
   const [currentView, setCurrentView] = useState<View>();
+  const [items, setItems] = useState<{ [id: string]: Item }>({});
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -20,12 +21,27 @@ const Home = () => {
           .then(snapshot => {
             if (snapshot.empty) {
               const newView = new View({});
+              Views.doc(newView.id).set(viewConverter.toFirestore(newView));
               setCurrentView(newView);
+            } else {
+              snapshot.forEach(doc => {
+                const latestView = viewConverter.fromFirestore(doc);
+                setCurrentView(latestView);
+              });
             }
-            snapshot.forEach(doc => {
-              const view = viewConverter.fromFirestore(doc);
-              setCurrentView(view);
-            });
+          });
+
+        Items.where('userId', '==', loginUser.uid)
+          .get()
+          .then(snapshot => {
+            if (snapshot.empty) {
+              console.log('no item found');
+            } else {
+              snapshot.forEach(doc => {
+                const loadedItem = itemConverter.fromFirestore(doc);
+                setItems(prev => ({ ...prev, [loadedItem.id]: loadedItem }));
+              });
+            }
           });
       } else {
         console.log('loginUser is null');
@@ -35,7 +51,16 @@ const Home = () => {
   }, []);
   return (
     <div>
-      {user ? <App currentView={currentView} setCurrentView={setCurrentView} /> : <Login />}
+      {user ? (
+        <App
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          items={items}
+          setItems={setItems}
+        />
+      ) : (
+        <Login />
+      )}
       <style jsx global>{`
         html,
         body {

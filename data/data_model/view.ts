@@ -34,27 +34,14 @@ export default class View {
 
   addItem(itemId: string) {
     this.sets.push(itemId);
-
-    // TODO: Save database
-    // .then(() => console.log('Successfully updated item.'))
-    // .catch(() => console.error('Failed to update item.'));
+    Views.doc(this.id)
+      .update({
+        sets: this.sets,
+      })
+      .then(() => console.log('Successfully updated item.'))
+      .catch(() => console.error('Failed to update item.'));
     return this;
   }
-
-  //   update(text: string) {
-  //     this.text = text;
-  //     Views.doc(this.id)
-  //       .update({ text, updatedAt: firebase.firestore.Timestamp.now() })
-  //       .then(() => console.log('Successfully updated item.'))
-  //       .catch(() => console.error('Failed to update item.'));
-  //   }
-
-  //   delete() {
-  //     Views.doc(this.id)
-  //       .delete()
-  //       .then(() => console.log('Successfully deleted item.'))
-  //       .catch(() => console.error('Failed to delete item.'));
-  //   }
 }
 
 // Firestore data converter
