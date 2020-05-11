@@ -21,7 +21,7 @@ const Home = () => {
           .then(snapshot => {
             if (snapshot.empty) {
               const newView = new View({});
-              Views.doc(newView.id).set(viewConverter.toFirestore(newView));
+              newView.save();
               setCurrentView(newView);
             } else {
               snapshot.forEach(doc => {

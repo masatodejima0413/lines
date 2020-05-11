@@ -18,9 +18,8 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
 
   const addItem = () => {
     const newItem = new Item({ viewId: currentView.id });
-    console.log('called');
-    const newView = currentView.addItem(newItem.id);
-    setCurrentView(newView);
+    const updatedView = currentView.addItem(newItem.id);
+    setCurrentView(updatedView);
     setItems(prev => ({ ...prev, [newItem.id]: newItem }));
     newItem.save();
   };
@@ -28,9 +27,8 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
   const deleteItem = (id: string) => {
     items[id].delete(currentView.id);
     setItems(omit(items, id));
-    const newSets = currentView.sets.filter(itemId => itemId !== id);
-    console.log(newSets);
-    setCurrentView(prev => new View({ ...prev, sets: newSets }));
+    const updatedSets = currentView.sets.filter(itemId => itemId !== id);
+    setCurrentView(prev => new View({ ...prev, sets: updatedSets }));
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
@@ -38,7 +36,7 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
     setItems(prev => ({ ...prev, [id]: items[id].update(text) }));
   };
 
-  if (!currentView || !Object.keys(items).length) {
+  if (!currentView) {
     return <h2>Loading...</h2>;
   }
 
@@ -60,22 +58,6 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
             </div>
           );
         })}
-        {/* {Object.keys(items).map(item => {
-          if (items[item].viewId === currentView.id) {
-            return (
-              <div className="item" key={items[item].id}>
-                <button type="button" onClick={() => deleteItem(items[item].id)}>
-                  -
-                </button>
-                <input
-                  type="text"
-                  value={items[item].text}
-                  onChange={e => handleChange(e, items[item].id)}
-                />
-              </div>
-            );
-          }
-        })} */}
         <hr />
         <div className="logout" onClick={handleLogout}>
           Logout
@@ -110,6 +92,7 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
           display: flex;
           align-items: center;
           border-left: 0.5rem solid #c4c4c4;
+          font-weight: bold;
         }
         .item input {
           height: 2.5rem;
