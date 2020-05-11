@@ -6,7 +6,7 @@ import Item from '../data/data_model/item';
 
 interface IProps {
   currentView: View;
-  setCurrentView: (updatedView: View) => void;
+  setCurrentView: React.Dispatch<React.SetStateAction<View>>;
   items: { [id: string]: Item };
   setItems: any;
 }
@@ -26,8 +26,11 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
   };
 
   const deleteItem = (id: string) => {
-    items[id].delete();
+    items[id].delete(currentView.id);
     setItems(omit(items, id));
+    const newSets = currentView.sets.filter(itemId => itemId !== id);
+    console.log(newSets);
+    setCurrentView(prev => new View({ ...prev, sets: newSets }));
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
@@ -35,35 +38,9 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
     setItems(prev => ({ ...prev, [id]: items[id].update(text) }));
   };
 
-  // const addChild = id => {
-  //   const newItems = items.map(newItem => {
-  //     if (newItem.id === id) {
-  //       newItem.children.push('');
-  //     }
-  //     return newItem;
-  //   });
-  //   setItems(newItems);
-  // };
-
-  // const deleteChild = (index, id) => {
-  //   const newItems = items.map(newItem => {
-  //     if (newItem.id === id) {
-  //       newItem.children.splice(index, 1);
-  //     }
-  //     return newItem;
-  //   });
-  //   setItems(newItems);
-  // };
-
-  // const updateChild = (e, index, id) => {
-  //   const newItems = items.map(newItem => {
-  //     if (newItem.id === id) {
-  //       newItem.children[index] = e.target.value;
-  //     }
-  //     return newItem;
-  //   });
-  //   setItems(newItems);
-  // };
+  if (!currentView || !Object.keys(items).length) {
+    return <h2>Loading...</h2>;
+  }
 
   return (
     <div className="container">
@@ -71,8 +48,19 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
         <button className="add" type="button" onClick={addItem}>
           +
         </button>
-        {currentView && Object.keys(items).length}
-        {Object.keys(items).map(item => {
+        {currentView.sets.map(setId => {
+          const item = items[setId];
+          if (!item) return null;
+          return (
+            <div className="item" key={item.id}>
+              <button type="button" onClick={() => deleteItem(item.id)}>
+                -
+              </button>
+              <input type="text" value={item.text} onChange={e => handleChange(e, item.id)} />
+            </div>
+          );
+        })}
+        {/* {Object.keys(items).map(item => {
           if (items[item].viewId === currentView.id) {
             return (
               <div className="item" key={items[item].id}>
@@ -87,7 +75,7 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
               </div>
             );
           }
-        })}
+        })} */}
         <hr />
         <div className="logout" onClick={handleLogout}>
           Logout

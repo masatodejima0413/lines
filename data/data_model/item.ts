@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
 import { v4 as uuidv4 } from 'uuid';
-import { Items } from '../collections';
+import { Items, Views } from '../collections';
 
 export default class Item {
   id: string;
@@ -49,11 +49,14 @@ export default class Item {
     return this;
   }
 
-  delete() {
+  delete(viewId: string) {
     Items.doc(this.id)
       .delete()
       .then(() => console.log('Successfully deleted item.'))
       .catch(() => console.error('Failed to delete item.'));
+    Views.doc(viewId).update({
+      sets: firebase.firestore.FieldValue.arrayRemove(this.id),
+    });
   }
 }
 
