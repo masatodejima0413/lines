@@ -2,8 +2,8 @@ import firebase, { User } from 'firebase/app';
 import React, { useEffect, useState } from 'react';
 import App from '../components/App';
 import Login from '../components/Login';
+import { Items, Views } from '../data/collections';
 import Item, { itemConverter } from '../data/data_model/item';
-import { Views, Items } from '../data/collections';
 import View, { viewConverter } from '../data/data_model/view';
 
 const Home = () => {

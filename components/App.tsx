@@ -16,7 +16,6 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
   };
 
   const addItem = () => {
-    console.log(currentView.id);
     const newItem = new Item({ viewId: currentView.id });
     console.log('called');
     const newView = currentView.addItem(newItem.id);
@@ -39,15 +38,7 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
     const text = e.target.value;
-    Object.keys(items).forEach(item => {
-      if (items[item].id === id) {
-        console.log(items[item]);
-        setItems(prev => ({
-          ...prev,
-          [items[item].id]: items[item].update(text),
-        }));
-      }
-    });
+    setItems(prev => ({ ...prev, [id]: items[id].update(text) }));
   };
 
   // const addChild = id => {
