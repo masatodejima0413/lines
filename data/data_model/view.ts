@@ -34,10 +34,12 @@ export default class View {
 
   addItem(itemId: string) {
     this.sets.push(itemId);
-
-    // TODO: Save database
-    // .then(() => console.log('Successfully updated item.'))
-    // .catch(() => console.error('Failed to update item.'));
+    Views.doc(this.id)
+      .update({
+        sets: this.sets,
+      })
+      .then(() => console.log('Successfully updated item.'))
+      .catch(() => console.error('Failed to update item.'));
     return this;
   }
 

@@ -46,6 +46,7 @@ export default class Item {
       .update({ text, updatedAt: firebase.firestore.Timestamp.now() })
       .then(() => console.log('Successfully updated item.'))
       .catch(() => console.error('Failed to update item.'));
+    return this;
   }
 
   delete() {
@@ -65,6 +66,7 @@ export const itemConverter = {
       updatedAt: item.updatedAt,
       text: item.text,
       userId: item.userId,
+      viewId: item.viewId,
     };
   },
   fromFirestore(snapshot) {

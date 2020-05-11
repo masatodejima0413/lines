@@ -6,20 +6,23 @@ import Item from '../data/data_model/item';
 interface IProps {
   currentView: View;
   setCurrentView: (updatedView: View) => void;
+  items: { [id: string]: Item };
+  setItems: any;
 }
 
-const App = ({ currentView, setCurrentView }: IProps) => {
+const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
   const handleLogout = () => {
     firebase.auth().signOut();
   };
 
   const addItem = () => {
+    console.log(currentView.id);
     const newItem = new Item({ viewId: currentView.id });
     console.log('called');
     const newView = currentView.addItem(newItem.id);
     setCurrentView(newView);
-    // setItems(prev => [...prev, newItem]);
-    // newItem.save();
+    setItems(prev => ({ ...prev, [newItem.id]: newItem }));
+    newItem.save();
   };
 
   const deleteItem = (id: string) => {
@@ -35,15 +38,16 @@ const App = ({ currentView, setCurrentView }: IProps) => {
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
-    // const text = e.target.value;
-    // const updatedItems = items.map(item => {
-    //   if (item.id === id) {
-    //     item.update(text);
-    //     return item;
-    //   }
-    //   return item;
-    // });
-    // setItems(updatedItems);
+    const text = e.target.value;
+    Object.keys(items).forEach(item => {
+      if (items[item].id === id) {
+        console.log(items[item]);
+        setItems(prev => ({
+          ...prev,
+          [items[item].id]: items[item].update(text),
+        }));
+      }
+    });
   };
 
   // const addChild = id => {
@@ -82,7 +86,21 @@ const App = ({ currentView, setCurrentView }: IProps) => {
         <button className="add" type="button" onClick={addItem}>
           +
         </button>
-        {currentView && currentView.sets.length}
+        {currentView && Object.keys(items).length}
+        {Object.keys(items).map(item => {
+          if (items[item].viewId === currentView.id) {
+            return (
+              <div className="item">
+                <input
+                  type="text"
+                  key={items[item].id}
+                  value={items[item].text}
+                  onChange={e => handleChange(e, items[item].id)}
+                />
+              </div>
+            );
+          }
+        })}
         <hr />
         <div className="logout" onClick={handleLogout}>
           Logout
