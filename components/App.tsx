@@ -25,7 +25,7 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
   };
 
   const deleteItem = (id: string) => {
-    items[id].delete(currentView.id);
+    items[id].delete();
     setItems(omit(items, id));
     const updatedSets = currentView.sets.filter(itemId => itemId !== id);
     setCurrentView(prev => new View({ ...prev, sets: updatedSets }));
