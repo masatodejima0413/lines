@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
 import React, { ChangeEvent } from 'react';
+import { omit } from 'lodash';
 import View from '../data/data_model/view';
 import Item from '../data/data_model/item';
 
@@ -25,15 +26,8 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
   };
 
   const deleteItem = (id: string) => {
-    // const restItems = [];
-    // items.forEach(item => {
-    //   if (item.id === id) {
-    //     item.delete();
-    //     return;
-    //   }
-    //   restItems.push(item);
-    // });
-    // setItems(restItems);
+    items[id].delete();
+    setItems(omit(items, id));
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
@@ -81,10 +75,12 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
         {Object.keys(items).map(item => {
           if (items[item].viewId === currentView.id) {
             return (
-              <div className="item">
+              <div className="item" key={items[item].id}>
+                <button type="button" onClick={() => deleteItem(items[item].id)}>
+                  -
+                </button>
                 <input
                   type="text"
-                  key={items[item].id}
                   value={items[item].text}
                   onChange={e => handleChange(e, items[item].id)}
                 />
