@@ -11,7 +11,7 @@ export default class Item {
   viewId: string;
 
   constructor({
-    id = uuidv4() as string,
+    id = uuidv4(),
     createdAt = firebase.firestore.Timestamp.now(),
     updatedAt = firebase.firestore.Timestamp.now(),
     text = '',
@@ -49,12 +49,12 @@ export default class Item {
     return this;
   }
 
-  delete(viewId: string) {
+  delete() {
     Items.doc(this.id)
       .delete()
       .then(() => console.log('Successfully deleted item.'))
       .catch(() => console.error('Failed to delete item.'));
-    Views.doc(viewId).update({
+    Views.doc(this.viewId).update({
       sets: firebase.firestore.FieldValue.arrayRemove(this.id),
     });
   }
