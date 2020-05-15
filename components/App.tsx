@@ -55,13 +55,21 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
     }));
   };
 
-  const moveLeft = (itemId: string, itemIndex: number, setId: string) => {
+  const move = ({
+    itemId,
+    itemIndex,
+    setId,
+    amount,
+  }: {
+    itemId: string;
+    itemIndex: number;
+    setId: string;
+    amount: number;
+  }) => {
     const set = sets[setId];
     const itemIds = [...set.itemIds];
-
     itemIds.splice(itemIndex, 1);
-    itemIds.splice(itemIndex - 1, 0, itemId);
-
+    itemIds.splice(itemIndex + amount, 0, itemId);
     setSets(prev => ({ ...prev, [set.id]: set.update(itemIds) }));
   };
 
@@ -94,8 +102,11 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
                       value={item.text}
                       onChange={e => handleChange(e, item.id)}
                     />
-                    <button type="button" onClick={() => moveLeft(item.id, index, setId)}>
-                      Move left
+                    <button
+                      type="button"
+                      onClick={() => move({ itemId: item.id, itemIndex: index, setId, amount: 2 })}
+                    >
+                      Move
                     </button>
                   </>
                 );
