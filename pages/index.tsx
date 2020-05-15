@@ -2,13 +2,15 @@ import firebase, { User } from 'firebase/app';
 import React, { useEffect, useState } from 'react';
 import App from '../components/App';
 import Login from '../components/Login';
-import { Items, Views } from '../data/collections';
+import { Items, Views, Sets } from '../data/collections';
 import Item, { itemConverter } from '../data/data_model/item';
 import View, { viewConverter } from '../data/data_model/view';
+import Set, { setConverter } from '../data/data_model/set';
 
 const Home = () => {
   const [currentView, setCurrentView] = useState<View>();
   const [items, setItems] = useState<{ [id: string]: Item }>({});
+  const [sets, setSets] = useState<{ [id: string]: Set }>({});
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -43,6 +45,19 @@ const Home = () => {
               });
             }
           });
+
+        Sets.where('userId', '==', loginUser.uid)
+          .get()
+          .then(snapshot => {
+            if (snapshot.empty) {
+              console.log('no set found');
+            } else {
+              snapshot.forEach(doc => {
+                const loadedSet = setConverter.fromFirestore(doc);
+                setSets(prev => ({ ...prev, [loadedSet.id]: loadedSet }));
+              });
+            }
+          });
       } else {
         console.log('loginUser is null');
         setUser(null);
@@ -55,6 +70,8 @@ const Home = () => {
         <App
           currentView={currentView}
           setCurrentView={setCurrentView}
+          sets={sets}
+          setSets={setSets}
           items={items}
           setItems={setItems}
         />

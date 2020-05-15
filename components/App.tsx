@@ -3,32 +3,42 @@ import React, { ChangeEvent } from 'react';
 import { omit } from 'lodash';
 import View from '../data/data_model/view';
 import Item from '../data/data_model/item';
+import Set from '../data/data_model/set';
 
 interface IProps {
   currentView: View;
   setCurrentView: React.Dispatch<React.SetStateAction<View>>;
+  sets: { [id: string]: Set };
+  setSets: any;
   items: { [id: string]: Item };
   setItems: any;
 }
 
-const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
+const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IProps) => {
   const handleLogout = () => {
     firebase.auth().signOut();
   };
 
   const addItem = () => {
-    const newItem = new Item({ viewId: currentView.id });
-    const updatedView = currentView.addItem(newItem.id);
+    const newItem = new Item({});
+    const newSet = new Set({ itemIds: [newItem.id] });
+    console.log(newSet);
+    const updatedView = currentView.addItem(newSet.id);
     setCurrentView(updatedView);
+    setSets(prev => ({ ...prev, [newSet.id]: newSet }));
     setItems(prev => ({ ...prev, [newItem.id]: newItem }));
     newItem.save();
+    newSet.save();
   };
 
-  const deleteItem = (id: string) => {
-    items[id].delete();
-    setItems(omit(items, id));
-    const updatedSets = currentView.sets.filter(itemId => itemId !== id);
-    setCurrentView(prev => new View({ ...prev, sets: updatedSets }));
+  const deleteSet = (setId: string) => {
+    sets[setId].delete(currentView.id);
+    setSets(omit(sets, setId));
+    const updatedSetIds = currentView.setIds.filter(argSetId => argSetId !== setId);
+    setCurrentView(prev => new View({ ...prev, setIds: updatedSetIds }));
+    sets[setId].itemIds.map(itemId => {
+      setItems(omit(items, itemId));
+    });
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
@@ -46,15 +56,26 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
         <button className="add" type="button" onClick={addItem}>
           +
         </button>
-        {currentView.sets.map(setId => {
-          const item = items[setId];
-          if (!item) return null;
+        {currentView.setIds.map(setId => {
+          const set = sets[setId];
+          if (!set) return null;
           return (
-            <div className="item" key={item.id}>
-              <button type="button" onClick={() => deleteItem(item.id)}>
+            <div className="item" key={set.id}>
+              <button type="button" onClick={() => deleteSet(set.id)}>
                 -
               </button>
-              <input type="text" value={item.text} onChange={e => handleChange(e, item.id)} />
+              {set.itemIds.map(itemId => {
+                const item = items[itemId];
+                if (!item) return null;
+                return (
+                  <input
+                    key={item.id}
+                    type="text"
+                    value={item.text}
+                    onChange={e => handleChange(e, item.id)}
+                  />
+                );
+              })}
             </div>
           );
         })}
