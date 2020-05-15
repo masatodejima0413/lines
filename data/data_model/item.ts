@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
 import { v4 as uuidv4 } from 'uuid';
-import { Items, Views } from '../collections';
+import { Items } from '../collections';
 
 export default class Item {
   id: string;

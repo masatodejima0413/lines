@@ -32,7 +32,7 @@ export default class View {
       .catch(() => console.error('Failed to create view.'));
   }
 
-  addItem(setId: string) {
+  addSet(setId: string) {
     this.setIds.push(setId);
     Views.doc(this.id)
       .update({

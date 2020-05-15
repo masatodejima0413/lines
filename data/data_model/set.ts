@@ -36,10 +36,19 @@ export default class Set {
     this.itemIds.push(itemId);
     Sets.doc(this.id)
       .update({
-        ItemIds: this.itemIds,
+        itemIds: this.itemIds,
       })
       .then(() => console.log('Successfully updated item.'))
       .catch(() => console.error('Failed to update item.'));
+    return this;
+  }
+
+  update(itemIds: string[]) {
+    this.itemIds = itemIds;
+    Sets.doc(this.id)
+      .update({ itemIds })
+      .then(() => console.log('Successfully updated item ids in set'))
+      .catch(() => console.error('Failed to update item ids in set'));
     return this;
   }
 
@@ -51,7 +60,7 @@ export default class Set {
     Views.doc(viewId).update({
       setIds: firebase.firestore.FieldValue.arrayRemove(this.id),
     });
-    this.itemIds.map(itemId => {
+    this.itemIds.forEach(itemId => {
       Items.doc(itemId)
         .delete()
         .then(() => console.log('Successfully deleted item.'))
