@@ -104,14 +104,15 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
             const set = sets[setId];
             if (!set) return null;
             return (
-              <div className="item" key={set.id}>
+              <div className="set" key={set.id}>
                 <button type="button" onClick={() => deleteSet(set.id)}>
                   -
                 </button>
 
-                <Droppable droppableId={setId}>
+                <Droppable droppableId={setId} direction="horizontal">
                   {(itemsDroppableProvided: DroppableProvided) => (
                     <div
+                      className="item-droppable-container"
                       ref={itemsDroppableProvided.innerRef}
                       {...itemsDroppableProvided.droppableProps}
                     >
@@ -122,24 +123,20 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
                           <Draggable key={itemId} draggableId={itemId} index={index}>
                             {(itemsDraggableProvided: DraggableProvided) => (
                               <div
+                                className="item"
                                 {...itemsDraggableProvided.draggableProps}
                                 ref={itemsDraggableProvided.innerRef}
                               >
+                                <div
+                                  className="handle"
+                                  {...itemsDraggableProvided.dragHandleProps}
+                                />
                                 <input
                                   key={item.id}
                                   type="text"
                                   value={item.text}
                                   onChange={e => handleChange(e, item.id)}
                                 />
-                                <div {...itemsDraggableProvided.dragHandleProps}>[ HANDLE]</div>
-                                {/* <button
-                                  type="button"
-                                  onClick={() =>
-                                    move({ itemId: item.id, itemIndex: index, setId, amount: 2 })
-                                  }
-                                >
-                                  Move
-                                </button> */}
                               </div>
                             )}
                           </Draggable>
@@ -165,6 +162,7 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
           .container {
             min-height: 100vh;
             background-color: #e5e5e5;
+
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -185,28 +183,42 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
             margin: 0 0 0 auto;
             cursor: pointer;
           }
-          .item {
+          .set {
             margin-bottom: 1.5rem;
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             border-left: 0.5rem solid #c4c4c4;
             font-weight: bold;
           }
-          .item input:first-of-type {
+          .item-droppable-container {
+            display: flex;
+          }
+          .set .item:first-of-type input {
             height: 2.5rem;
             font-size: 2rem;
             margin: 1rem;
             border: none;
           }
-          .item input {
+          .set .item input {
             font-size: 1rem;
             height: 1.2rem;
             border: none;
-            padding-left: 0.5rem;
-            border-left: 0.2rem solid #c4c4c4;
+            // padding-left: 0.5rem;
+            // border-left: 0.2rem solid #c4c4c4;
             margin: 0.1rem;
           }
-          .item button {
+          .item {
+            display: flex;
+            align-items: center;
+          }
+          .item .handle {
+            width: 20px;
+            height: 20px;
+            background-color: #ffddd2;
+            border-radius: 5px;
+          }
+          .set button {
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
