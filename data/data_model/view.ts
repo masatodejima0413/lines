@@ -42,6 +42,15 @@ export default class View {
       .catch(() => console.error('Failed to update item.'));
     return this;
   }
+
+  update(setIds: string[]) {
+    this.setIds = setIds;
+    Views.doc(this.id)
+      .update({ setIds })
+      .then(() => console.log('Successfully updated item ids in set'))
+      .catch(() => console.error('Failed to update item ids in set'));
+    return this;
+  }
 }
 
 // Firestore data converter
