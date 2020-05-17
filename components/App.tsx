@@ -64,42 +64,54 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
   };
 
   const move = ({
-    source,
-    destination,
+    sourceIndex,
+    destIndex,
     draggableId,
-    type,
+    array,
   }: {
-    source: any;
-    destination: any;
+    sourceIndex: number;
+    destIndex: number;
     draggableId: string;
-    type: string;
+    array: string[];
   }) => {
-    if (type === 'sets') {
-      const setIds = [...currentView.setIds];
-      setIds.splice(source.index, 1);
-      setIds.splice(destination.index, 0, draggableId);
-      const updatedView = currentView.update(setIds);
-      setCurrentView(updatedView);
-      return;
-    }
-
-    if (type === 'items') {
-      const set = sets[destination.droppableId];
-      const itemIds = [...set.itemIds];
-      itemIds.splice(source.index, 1);
-      itemIds.splice(destination.index, 0, draggableId);
-      setSets(prev => ({ ...prev, [set.id]: set.update(itemIds) }));
-    }
+    const ids = [...array];
+    ids.splice(sourceIndex, 1);
+    ids.splice(destIndex, 0, draggableId);
+    return ids;
   };
 
   const onDragEnd = ({ source, destination, draggableId, type }: DropResult) => {
-    move({
-      source,
-      destination,
-      draggableId,
-      type,
-    });
+    if (!destination) {
+      return;
+    }
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return;
+    }
+    if (destination.droppableId === source.droppableId) {
+      if (type === 'items') {
+        const set = sets[destination.droppableId];
+
+        const updatedItemIds = move({
+          sourceIndex: source.index,
+          destIndex: destination.index,
+          draggableId,
+          array: set.itemIds,
+        });
+        setSets(prev => ({ ...prev, [set.id]: set.update(updatedItemIds) }));
+      }
+      if (type === 'sets') {
+        const updatedSetIds = move({
+          sourceIndex: source.index,
+          destIndex: destination.index,
+          draggableId,
+          array: currentView.setIds,
+        });
+        const updatedView = currentView.update(updatedSetIds);
+        setCurrentView(updatedView);
+      }
+    }
   };
+
   if (!currentView) {
     return <h2>Loading...</h2>;
   }
