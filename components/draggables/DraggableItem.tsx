@@ -46,28 +46,26 @@ const DraggableItem = ({ itemId, index, setId }: IProps) => {
       </Draggable>
       <style jsx>{`
         .item:first-of-type input {
-          height: 2.5rem;
           font-size: 2rem;
-          margin: 1rem;
+          font-weight: bold;
           border: none;
         }
         .item input {
           font-size: 1rem;
-          height: 1.2rem;
+          font-weight: bold;
           border: none;
           padding-left: 0.5rem;
-          border-left: 0.2rem solid #c4c4c4;
-          margin: 0.1rem;
         }
         .item {
           display: flex;
           align-items: center;
+          margin-left: 12px;
         }
         .item .handle {
-          width: 20px;
-          height: 20px;
-          background-color: #ffddd2;
-          border-radius: 5px;
+          width: 12px;
+          height: 80%;
+          background-color: lightgray;
+          border-radius: 2px;
         }
         .item .delete {
           cursor: pointer;

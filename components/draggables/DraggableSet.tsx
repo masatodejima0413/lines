@@ -51,8 +51,8 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
             {...setsDraggableProvided.draggableProps}
             ref={setsDraggableProvided.innerRef}
           >
-            <div {...setsDraggableProvided.dragHandleProps}>[setHandle]</div>
-            <button type="button" onClick={() => deleteSet()}>
+            <div className="set-handle" {...setsDraggableProvided.dragHandleProps} />
+            <button type="button" onClick={deleteSet}>
               -
             </button>
 
@@ -80,11 +80,20 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
         )}
       </Draggable>
       <style jsx>{`
+        .set-handle {
+          width: 18px;
+          height: 80%;
+          background-color: lightgray;
+          border-radius: 2px;
+        }
+        .set-handle:hover {
+          background-color: darkgray;
+        }
         .set {
+          height: 60px;
           margin-bottom: 1.5rem;
           display: flex;
           align-items: center;
-          border-left: 0.5rem solid #c4c4c4;
           font-weight: bold;
         }
         .item-droppable-container {
