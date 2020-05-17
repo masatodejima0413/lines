@@ -1,0 +1,14 @@
+name: Type-check
+
+on: push
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: |
+          echo Installing packages
+          yarn
+          echo Running tsc
+          yarn type-check

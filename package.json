@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ./"
+    "lint": "eslint ./",
+    "type-check": "tsc --project tsconfig.json"
   },
   "dependencies": {
     "firebase": "^7.14.2",
