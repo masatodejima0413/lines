@@ -1,17 +1,18 @@
 import firebase from 'firebase/app';
 import { omit } from 'lodash';
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import {
   DragDropContext,
   Draggable,
-  Droppable,
-  DropResult,
   DraggableProvided,
+  Droppable,
   DroppableProvided,
+  DropResult,
 } from 'react-beautiful-dnd';
 import Item from '../data/data_model/item';
 import Set from '../data/data_model/set';
 import View from '../data/data_model/view';
+import { DraggableItem } from './draggables';
 
 interface IProps {
   currentView: View;
@@ -48,11 +49,6 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
     });
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
-    const text = e.target.value;
-    setItems(prev => ({ ...prev, [id]: items[id].update(text) }));
-  };
-
   const addItem = (setId: string) => {
     const newItem = new Item({});
     setItems(prev => ({ ...prev, [newItem.id]: newItem }));
@@ -61,13 +57,6 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
       ...prev,
       [setId]: sets[setId].addItem(newItem.id),
     }));
-  };
-
-  const deleteItem = (itemId: string, setId: string) => {
-    items[itemId].delete();
-    setItems(omit(items, itemId));
-    const updatedItemIds = sets[setId].itemIds.filter(argItemId => argItemId !== itemId);
-    setSets(prev => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
   };
 
   const move = ({
@@ -157,30 +146,16 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
                                 {...itemsDroppableProvided.droppableProps}
                               >
                                 {set.itemIds.map((itemId, index) => {
-                                  const item = items[itemId];
-                                  if (!item) return null;
                                   return (
-                                    <Draggable key={itemId} draggableId={itemId} index={index}>
-                                      {(itemsDraggableProvided: DraggableProvided) => (
-                                        <div
-                                          className="item"
-                                          {...itemsDraggableProvided.draggableProps}
-                                          ref={itemsDraggableProvided.innerRef}
-                                        >
-                                          <div
-                                            className="handle"
-                                            {...itemsDraggableProvided.dragHandleProps}
-                                          />
-                                          <input
-                                            key={item.id}
-                                            type="text"
-                                            value={item.text}
-                                            onChange={e => handleChange(e, item.id)}
-                                          />
-                                          <div onClick={() => deleteItem(itemId, set.id)}>×</div>
-                                        </div>
-                                      )}
-                                    </Draggable>
+                                    <DraggableItem
+                                      id={itemId}
+                                      index={index}
+                                      items={items}
+                                      setItems={setItems}
+                                      setId={setId}
+                                      sets={sets}
+                                      setSets={setSets}
+                                    />
                                   );
                                 })}
                                 {itemsDroppableProvided.placeholder}
@@ -240,30 +215,6 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
         }
         .item-droppable-container {
           display: flex;
-        }
-        .set .item:first-of-type input {
-          height: 2.5rem;
-          font-size: 2rem;
-          margin: 1rem;
-          border: none;
-        }
-        .set .item input {
-          font-size: 1rem;
-          height: 1.2rem;
-          border: none;
-          padding-left: 0.5rem;
-          border-left: 0.2rem solid #c4c4c4;
-          margin: 0.1rem;
-        }
-        .item {
-          display: flex;
-          align-items: center;
-        }
-        .item .handle {
-          width: 20px;
-          height: 20px;
-          background-color: #ffddd2;
-          border-radius: 5px;
         }
         .set button {
           border: none;
