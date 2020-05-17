@@ -63,6 +63,13 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
     }));
   };
 
+  const deleteItem = (itemId: string, setId: string) => {
+    items[itemId].delete();
+    setItems(omit(items, itemId));
+    const updatedItemIds = sets[setId].itemIds.filter(argItemId => argItemId !== itemId);
+    setSets(prev => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
+  };
+
   const move = ({
     sourceIndex,
     destIndex,
@@ -170,6 +177,7 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
                                             value={item.text}
                                             onChange={e => handleChange(e, item.id)}
                                           />
+                                          <div onClick={() => deleteItem(itemId, set.id)}>×</div>
                                         </div>
                                       )}
                                     </Draggable>
