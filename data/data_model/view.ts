@@ -5,23 +5,23 @@ import { Views } from '../collections';
 export default class View {
   id: string;
   userId: string;
-  sets: string[];
+  setIds: string[];
   createdAt: firebase.firestore.Timestamp;
 
   constructor({
     id = uuidv4(),
     userId = firebase.auth().currentUser.uid,
-    sets = [],
+    setIds = [],
     createdAt = firebase.firestore.Timestamp.now(),
   }: {
     id?: string;
     userId?: string;
-    sets?: string[];
+    setIds?: string[];
     createdAt?: firebase.firestore.Timestamp;
   }) {
     this.id = id;
     this.userId = userId;
-    this.sets = sets;
+    this.setIds = setIds;
     this.createdAt = createdAt;
   }
 
@@ -32,14 +32,23 @@ export default class View {
       .catch(() => console.error('Failed to create view.'));
   }
 
-  addItem(itemId: string) {
-    this.sets.push(itemId);
+  addSet(setId: string) {
+    this.setIds.push(setId);
     Views.doc(this.id)
       .update({
-        sets: this.sets,
+        setIds: this.setIds,
       })
       .then(() => console.log('Successfully updated item.'))
       .catch(() => console.error('Failed to update item.'));
+    return this;
+  }
+
+  update(setIds: string[]) {
+    this.setIds = setIds;
+    Views.doc(this.id)
+      .update({ setIds })
+      .then(() => console.log('Successfully updated item ids in set'))
+      .catch(() => console.error('Failed to update item ids in set'));
     return this;
   }
 }
@@ -50,7 +59,7 @@ export const viewConverter = {
     return {
       id: view.id,
       userId: view.userId,
-      sets: view.sets,
+      setIds: view.setIds,
       createdAt: view.createdAt,
     };
   },
@@ -59,7 +68,7 @@ export const viewConverter = {
     return new View({
       id: data.id,
       userId: data.userId,
-      sets: data.sets,
+      setIds: data.setIds,
       createdAt: data.createdAt,
     });
   },

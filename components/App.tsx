@@ -1,34 +1,51 @@
 import firebase from 'firebase/app';
-import React, { ChangeEvent } from 'react';
 import { omit } from 'lodash';
-import View from '../data/data_model/view';
+import React, { ChangeEvent } from 'react';
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+  DraggableProvided,
+  DroppableProvided,
+} from 'react-beautiful-dnd';
 import Item from '../data/data_model/item';
+import Set from '../data/data_model/set';
+import View from '../data/data_model/view';
 
 interface IProps {
   currentView: View;
   setCurrentView: React.Dispatch<React.SetStateAction<View>>;
+  sets: { [id: string]: Set };
+  setSets: any;
   items: { [id: string]: Item };
   setItems: any;
 }
 
-const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
+const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IProps) => {
   const handleLogout = () => {
     firebase.auth().signOut();
   };
 
-  const addItem = () => {
-    const newItem = new Item({ viewId: currentView.id });
-    const updatedView = currentView.addItem(newItem.id);
+  const addSet = () => {
+    const newItem = new Item({});
+    const newSet = new Set({ itemIds: [newItem.id] });
+    const updatedView = currentView.addSet(newSet.id);
     setCurrentView(updatedView);
+    setSets(prev => ({ ...prev, [newSet.id]: newSet }));
     setItems(prev => ({ ...prev, [newItem.id]: newItem }));
     newItem.save();
+    newSet.save();
   };
 
-  const deleteItem = (id: string) => {
-    items[id].delete();
-    setItems(omit(items, id));
-    const updatedSets = currentView.sets.filter(itemId => itemId !== id);
-    setCurrentView(prev => new View({ ...prev, sets: updatedSets }));
+  const deleteSet = (setId: string) => {
+    sets[setId].delete(currentView.id);
+    setSets(omit(sets, setId));
+    const updatedSetIds = currentView.setIds.filter(argSetId => argSetId !== setId);
+    setCurrentView(prev => new View({ ...prev, setIds: updatedSetIds }));
+    sets[setId].itemIds.forEach(itemId => {
+      setItems(omit(items, itemId));
+    });
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
@@ -36,37 +53,164 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
     setItems(prev => ({ ...prev, [id]: items[id].update(text) }));
   };
 
+  const addItem = (setId: string) => {
+    const newItem = new Item({});
+    setItems(prev => ({ ...prev, [newItem.id]: newItem }));
+    newItem.save();
+    setSets(prev => ({
+      ...prev,
+      [setId]: sets[setId].addItem(newItem.id),
+    }));
+  };
+
+  const deleteItem = (itemId: string, setId: string) => {
+    items[itemId].delete();
+    setItems(omit(items, itemId));
+    const updatedItemIds = sets[setId].itemIds.filter(argItemId => argItemId !== itemId);
+    setSets(prev => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
+  };
+
+  const move = ({
+    sourceIndex,
+    destIndex,
+    draggableId,
+    array,
+  }: {
+    sourceIndex: number;
+    destIndex: number;
+    draggableId: string;
+    array: string[];
+  }) => {
+    const ids = [...array];
+    ids.splice(sourceIndex, 1);
+    ids.splice(destIndex, 0, draggableId);
+    return ids;
+  };
+
+  const onDragEnd = ({ source, destination, draggableId, type }: DropResult) => {
+    if (!destination) {
+      return;
+    }
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return;
+    }
+    if (destination.droppableId === source.droppableId) {
+      if (type === 'items') {
+        const set = sets[destination.droppableId];
+
+        const updatedItemIds = move({
+          sourceIndex: source.index,
+          destIndex: destination.index,
+          draggableId,
+          array: set.itemIds,
+        });
+        setSets(prev => ({ ...prev, [set.id]: set.update(updatedItemIds) }));
+      }
+      if (type === 'sets') {
+        const updatedSetIds = move({
+          sourceIndex: source.index,
+          destIndex: destination.index,
+          draggableId,
+          array: currentView.setIds,
+        });
+        const updatedView = currentView.update(updatedSetIds);
+        setCurrentView(updatedView);
+      }
+    }
+  };
+
   if (!currentView) {
     return <h2>Loading...</h2>;
   }
 
   return (
-    <div className="container">
-      <div className="main-wrapper">
-        <button className="add" type="button" onClick={addItem}>
-          +
-        </button>
-        {currentView.sets.map(setId => {
-          const item = items[setId];
-          if (!item) return null;
-          return (
-            <div className="item" key={item.id}>
-              <button type="button" onClick={() => deleteItem(item.id)}>
-                -
-              </button>
-              <input type="text" value={item.text} onChange={e => handleChange(e, item.id)} />
-            </div>
-          );
-        })}
-        <hr />
-        <div className="logout" onClick={handleLogout}>
-          Logout
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="container">
+        <div className="main-wrapper">
+          <button className="add" type="button" onClick={addSet}>
+            +
+          </button>
+          <Droppable droppableId="all-sets" direction="vertical" type="sets">
+            {(setsDroppableProvided: DroppableProvided) => (
+              <div {...setsDroppableProvided.droppableProps} ref={setsDroppableProvided.innerRef}>
+                {currentView.setIds.map((setId, setIndex) => {
+                  const set = sets[setId];
+                  if (!set) return null;
+                  return (
+                    <Draggable draggableId={set.id} index={setIndex} key={set.id}>
+                      {(setsDraggableProvided: DraggableProvided) => (
+                        <div
+                          className="set"
+                          {...setsDraggableProvided.draggableProps}
+                          ref={setsDraggableProvided.innerRef}
+                        >
+                          <div {...setsDraggableProvided.dragHandleProps}>[setHandle]</div>
+                          <button type="button" onClick={() => deleteSet(set.id)}>
+                            -
+                          </button>
+
+                          <Droppable droppableId={setId} direction="horizontal" type="items">
+                            {(itemsDroppableProvided: DroppableProvided) => (
+                              <div
+                                className="item-droppable-container"
+                                ref={itemsDroppableProvided.innerRef}
+                                {...itemsDroppableProvided.droppableProps}
+                              >
+                                {set.itemIds.map((itemId, index) => {
+                                  const item = items[itemId];
+                                  if (!item) return null;
+                                  return (
+                                    <Draggable key={itemId} draggableId={itemId} index={index}>
+                                      {(itemsDraggableProvided: DraggableProvided) => (
+                                        <div
+                                          className="item"
+                                          {...itemsDraggableProvided.draggableProps}
+                                          ref={itemsDraggableProvided.innerRef}
+                                        >
+                                          <div
+                                            className="handle"
+                                            {...itemsDraggableProvided.dragHandleProps}
+                                          />
+                                          <input
+                                            key={item.id}
+                                            type="text"
+                                            value={item.text}
+                                            onChange={e => handleChange(e, item.id)}
+                                          />
+                                          <div onClick={() => deleteItem(itemId, set.id)}>×</div>
+                                        </div>
+                                      )}
+                                    </Draggable>
+                                  );
+                                })}
+                                {itemsDroppableProvided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+
+                          <button type="button" onClick={() => addItem(set.id)}>
+                            +
+                          </button>
+                        </div>
+                      )}
+                    </Draggable>
+                  );
+                })}
+                {setsDroppableProvided.placeholder}
+              </div>
+            )}
+          </Droppable>
+          <hr />
+          <div className="logout" onClick={handleLogout}>
+            Logout
+          </div>
         </div>
       </div>
       <style jsx>{`
         .container {
           min-height: 100vh;
           background-color: #e5e5e5;
+
           display: flex;
           flex-direction: column;
           justify-content: center;
@@ -87,20 +231,41 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
           margin: 0 0 0 auto;
           cursor: pointer;
         }
-        .item {
+        .set {
           margin-bottom: 1.5rem;
           display: flex;
           align-items: center;
           border-left: 0.5rem solid #c4c4c4;
           font-weight: bold;
         }
-        .item input {
+        .item-droppable-container {
+          display: flex;
+        }
+        .set .item:first-of-type input {
           height: 2.5rem;
           font-size: 2rem;
           margin: 1rem;
           border: none;
         }
-        .item button {
+        .set .item input {
+          font-size: 1rem;
+          height: 1.2rem;
+          border: none;
+          padding-left: 0.5rem;
+          border-left: 0.2rem solid #c4c4c4;
+          margin: 0.1rem;
+        }
+        .item {
+          display: flex;
+          align-items: center;
+        }
+        .item .handle {
+          width: 20px;
+          height: 20px;
+          background-color: #ffddd2;
+          border-radius: 5px;
+        }
+        .set button {
           border: none;
           font-size: 1.5rem;
           cursor: pointer;
@@ -134,7 +299,7 @@ const App = ({ currentView, setCurrentView, items, setItems }: IProps) => {
           border: 2px solid #c4c4c4;
         }
       `}</style>
-    </div>
+    </DragDropContext>
   );
 };
 
