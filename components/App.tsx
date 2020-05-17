@@ -59,21 +59,43 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
     }));
   };
 
-  const move = ({
-    sourceIndex,
-    destIndex,
-    draggableId,
-    array,
-  }: {
-    sourceIndex: number;
-    destIndex: number;
-    draggableId: string;
-    array: string[];
-  }) => {
-    const ids = [...array];
-    ids.splice(sourceIndex, 1);
-    ids.splice(destIndex, 0, draggableId);
-    return ids;
+  const move = {
+    inSameField: ({
+      sourceIndex,
+      destIndex,
+      draggableId,
+      array,
+    }: {
+      sourceIndex: number;
+      destIndex: number;
+      draggableId: string;
+      array: string[];
+    }) => {
+      const ids = [...array];
+      ids.splice(sourceIndex, 1);
+      ids.splice(destIndex, 0, draggableId);
+      return ids;
+    },
+    toOtherField: ({
+      source,
+      destination,
+      draggableId,
+      sourceArray,
+      destArray,
+    }: {
+      source: any;
+      destination: any;
+      draggableId: string;
+      sourceArray: string[];
+      destArray: string[];
+    }) => {
+      console.log('one to anothoer move');
+      const startIds = [...sourceArray];
+      startIds.splice(source.index, 1);
+      const finishIds = [...destArray];
+      finishIds.splice(destination.index, 0, draggableId);
+      return { startIds, finishIds };
+    },
   };
 
   const onDragEnd = ({ source, destination, draggableId, type }: DropResult) => {
@@ -87,7 +109,7 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
       if (type === 'items') {
         const set = sets[destination.droppableId];
 
-        const updatedItemIds = move({
+        const updatedItemIds = move.inSameField({
           sourceIndex: source.index,
           destIndex: destination.index,
           draggableId,
@@ -96,7 +118,7 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
         setSets(prev => ({ ...prev, [set.id]: set.update(updatedItemIds) }));
       }
       if (type === 'sets') {
-        const updatedSetIds = move({
+        const updatedSetIds = move.inSameField({
           sourceIndex: source.index,
           destIndex: destination.index,
           draggableId,
@@ -105,6 +127,25 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
         const updatedView = currentView.update(updatedSetIds);
         setCurrentView(updatedView);
       }
+    } else {
+      if (type === 'items') {
+        const sourceSet = sets[source.droppableId];
+        const destSet = sets[destination.droppableId];
+        const { startIds, finishIds } = move.toOtherField({
+          source,
+          destination,
+          draggableId,
+          sourceArray: sourceSet.itemIds,
+          destArray: destSet.itemIds,
+        });
+        console.log(startIds, finishIds);
+        setSets(prev => ({
+          ...prev,
+          [sourceSet.id]: sourceSet.update(startIds),
+          [destSet.id]: destSet.update(finishIds),
+        }));
+      }
+      console.log('dragged');
     }
   };
 
@@ -148,6 +189,7 @@ const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IP
                                 {set.itemIds.map((itemId, index) => {
                                   return (
                                     <DraggableItem
+                                      key={itemId}
                                       id={itemId}
                                       index={index}
                                       items={items}
