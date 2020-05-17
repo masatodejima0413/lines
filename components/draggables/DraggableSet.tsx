@@ -1,9 +1,10 @@
 import { omit } from 'lodash';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Draggable, DraggableProvided, Droppable, DroppableProvided } from 'react-beautiful-dnd';
 import Item from '../../data/data_model/item';
 import View from '../../data/data_model/view';
 import DraggableItem from './DraggableItem';
+import { ViewContext } from '../context/ViewContextProvider';
 
 export enum DragDropType {
   SET = 'SET',
@@ -21,16 +22,9 @@ interface IProps {
   setItems: any;
 }
 
-const DraggableSet = ({
-  currentView,
-  setCurrentView,
-  setIndex,
-  setId,
-  sets,
-  setSets,
-  items,
-  setItems,
-}: IProps) => {
+const DraggableSet = ({ setId, setIndex }: IProps) => {
+  const { currentView, setCurrentView, sets, setSets, items, setItems } = useContext(ViewContext);
+
   const set = sets[setId];
   if (!set) return null;
 
@@ -77,16 +71,7 @@ const DraggableSet = ({
                 >
                   {set.itemIds.map((itemId, index) => {
                     return (
-                      <DraggableItem
-                        key={itemId}
-                        id={itemId}
-                        index={index}
-                        items={items}
-                        setItems={setItems}
-                        setId={setId}
-                        sets={sets}
-                        setSets={setSets}
-                      />
+                      <DraggableItem key={itemId} itemId={itemId} index={index} setId={setId} />
                     );
                   })}
                   {itemsDroppableProvided.placeholder}

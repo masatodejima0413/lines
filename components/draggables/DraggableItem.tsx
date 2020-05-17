@@ -1,29 +1,26 @@
 import { omit } from 'lodash';
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useContext } from 'react';
 import { Draggable, DraggableProvided } from 'react-beautiful-dnd';
-import Item from '../../data/data_model/item';
-import Set from '../../data/data_model/set';
+import { ViewContext } from '../context/ViewContextProvider';
 
 interface IProps {
-  id: string;
+  itemId: string;
   index: number;
-  items: { [id: string]: Item };
-  setItems: any;
   setId: string;
-  sets: { [id: string]: Set };
-  setSets: any;
 }
 
-const DraggableItem = ({ id, index, items, setItems, sets, setId, setSets }: IProps) => {
-  const item = items[id];
+const DraggableItem = ({ itemId, index, setId }: IProps) => {
+  const { sets, setSets, items, setItems } = useContext(ViewContext);
+
+  const item = items[itemId];
   if (!item) return null;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newText = e.target.value;
-    setItems(prev => ({ ...prev, [id]: item.update(newText) }));
+    setItems(prev => ({ ...prev, [itemId]: item.update(newText) }));
   };
 
-  const deleteItem = (itemId: string) => {
+  const deleteItem = () => {
     items[itemId].delete();
     setItems(omit(items, itemId));
     const updatedItemIds = sets[setId].itemIds.filter(argItemId => argItemId !== itemId);
@@ -32,7 +29,7 @@ const DraggableItem = ({ id, index, items, setItems, sets, setId, setSets }: IPr
 
   return (
     <>
-      <Draggable key={id} draggableId={id} index={index}>
+      <Draggable key={itemId} draggableId={itemId} index={index}>
         {(itemsDraggableProvided: DraggableProvided) => (
           <div
             className="item"
@@ -41,7 +38,7 @@ const DraggableItem = ({ id, index, items, setItems, sets, setId, setSets }: IPr
           >
             <div className="handle" {...itemsDraggableProvided.dragHandleProps} />
             <input type="text" value={item.text} onChange={handleChange} />
-            <div className="delete" onClick={() => deleteItem(id)}>
+            <div className="delete" onClick={deleteItem}>
               ×
             </div>
           </div>

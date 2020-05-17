@@ -1,22 +1,15 @@
 import firebase from 'firebase/app';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Droppable, DroppableProvided } from 'react-beautiful-dnd';
 import Item from '../data/data_model/item';
 import Set from '../data/data_model/set';
-import View from '../data/data_model/view';
 import DragDropContextProvider from './context/DragDropContextProvider';
+import { ViewContext } from './context/ViewContextProvider';
 import DraggableSet, { DragDropType } from './draggables/DraggableSet';
 
-interface IProps {
-  currentView: View;
-  setCurrentView: React.Dispatch<React.SetStateAction<View>>;
-  sets: { [id: string]: Set };
-  setSets: any;
-  items: { [id: string]: Item };
-  setItems: any;
-}
+const App = () => {
+  const { currentView, setCurrentView, sets, setSets, items, setItems } = useContext(ViewContext);
 
-const App = ({ currentView, setCurrentView, sets, setSets, items, setItems }: IProps) => {
   const handleLogout = () => {
     firebase.auth().signOut();
   };
