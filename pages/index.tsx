@@ -1,17 +1,16 @@
 import firebase, { User } from 'firebase/app';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import App from '../components/App';
+import { ViewContext } from '../components/context/ViewContextProvider';
 import Login from '../components/Login';
-import { Items, Views, Sets } from '../data/collections';
-import Item, { itemConverter } from '../data/data_model/item';
+import { Items, Sets, Views } from '../data/collections';
+import { itemConverter } from '../data/data_model/item';
+import { setConverter } from '../data/data_model/set';
 import View, { viewConverter } from '../data/data_model/view';
-import Set, { setConverter } from '../data/data_model/set';
 
 const Home = () => {
-  const [currentView, setCurrentView] = useState<View>();
-  const [items, setItems] = useState<{ [id: string]: Item }>({});
-  const [sets, setSets] = useState<{ [id: string]: Set }>({});
   const [user, setUser] = useState<User | null>(null);
+  const { setCurrentView, setSets, setItems } = useContext(ViewContext);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(loginUser => {
@@ -66,18 +65,7 @@ const Home = () => {
   }, []);
   return (
     <div>
-      {user ? (
-        <App
-          currentView={currentView}
-          setCurrentView={setCurrentView}
-          sets={sets}
-          setSets={setSets}
-          items={items}
-          setItems={setItems}
-        />
-      ) : (
-        <Login />
-      )}
+      {user ? <App /> : <Login />}
       <style jsx global>{`
         html,
         body {
