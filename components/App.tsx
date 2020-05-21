@@ -8,7 +8,7 @@ import { ViewContext } from './context/ViewContextProvider';
 import DraggableSet, { DragDropType } from './draggables/DraggableSet';
 
 const App = () => {
-  const { currentView, setCurrentView, sets, setSets, items, setItems } = useContext(ViewContext);
+  const { currentView, setCurrentView, sets, setSets, setItems } = useContext(ViewContext);
 
   const handleLogout = () => {
     firebase.auth().signOut();
@@ -45,17 +45,7 @@ const App = () => {
             {(setsDroppableProvided: DroppableProvided) => (
               <div {...setsDroppableProvided.droppableProps} ref={setsDroppableProvided.innerRef}>
                 {currentView.setIds.map((setId, setIndex) => (
-                  <DraggableSet
-                    key={setId}
-                    setCurrentView={setCurrentView}
-                    currentView={currentView}
-                    setId={setId}
-                    setIndex={setIndex}
-                    items={items}
-                    setItems={setItems}
-                    sets={sets}
-                    setSets={setSets}
-                  />
+                  <DraggableSet key={setId} setId={setId} setIndex={setIndex} />
                 ))}
                 {setsDroppableProvided.placeholder}
               </div>

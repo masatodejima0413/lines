@@ -12,14 +12,8 @@ export enum DragDropType {
 }
 
 interface IProps {
-  currentView: any;
-  setCurrentView: any;
   setIndex: any;
   setId: any;
-  sets: any;
-  setSets: any;
-  items: any;
-  setItems: any;
 }
 
 const DraggableSet = ({ setId, setIndex }: IProps) => {
