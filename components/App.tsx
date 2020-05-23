@@ -37,9 +37,9 @@ const App = () => {
       setSets={setSets}
     >
       <div className="container">
-        <button className="add-set" type="button" onClick={addSet}>
+        <div className="add-set" onClick={addSet}>
           +
-        </button>
+        </div>
         <Droppable droppableId="all-sets" direction="vertical" type={DragDropType.SET}>
           {(setsDroppableProvided: DroppableProvided) => (
             <div {...setsDroppableProvided.droppableProps} ref={setsDroppableProvided.innerRef}>
@@ -63,26 +63,19 @@ const App = () => {
           padding: 12px;
         }
         .add-set {
-          border: none;
           font-size: 2.5rem;
+          width: 48px;
           display: block;
-          margin: 12px auto 12px 12px;
           cursor: pointer;
         }
         .logout {
-          margin: 0 auto;
-          background-color: #c4c4c4;
-          color: white;
-          border: 2px solid #c4c4c4;
-          font-weight: 600;
-          padding: 0.4rem 1rem;
+          position: fixed;
+          top: 16px;
+          right: 16px;
           cursor: pointer;
-          transition: all 0.3s ease;
         }
         .logout:hover {
-          background-color: white;
-          color: #c4c4c4;
-          border: 2px solid #c4c4c4;
+          text-decoration: underline;
         }
       `}</style>
     </DragDropContextProvider>

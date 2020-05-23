@@ -7,9 +7,10 @@ interface IProps {
   itemId: string;
   index: number;
   setId: string;
+  addItem: () => void;
 }
 
-const DraggableItem = ({ itemId, index, setId }: IProps) => {
+const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
   const { sets, setSets, items, setItems } = useContext(ViewContext);
 
   const item = items[itemId];
@@ -27,6 +28,25 @@ const DraggableItem = ({ itemId, index, setId }: IProps) => {
     setSets(prev => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
   };
 
+  const handleKeydown = e => {
+    const { keyCode, metaKey, target } = e;
+    // 8: Delete key
+    if (metaKey && keyCode === 8 && !target.value) {
+      deleteItem();
+    }
+    // 13: Enter key
+    if (metaKey && keyCode === 13) {
+      addItem();
+    }
+  };
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.addEventListener('keydown', handleKeydown);
+  };
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.removeEventListener('keydown', handleKeydown);
+  };
+
   return (
     <>
       <Draggable key={itemId} draggableId={itemId} index={index}>
@@ -37,8 +57,15 @@ const DraggableItem = ({ itemId, index, setId }: IProps) => {
             ref={itemsDraggableProvided.innerRef}
           >
             <div className="handle" {...itemsDraggableProvided.dragHandleProps} />
-            <input type="text" value={item.text} onChange={handleChange} />
-            <div className="delete" onClick={deleteItem}>
+            <input
+              autoFocus
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              type="text"
+              value={item.text}
+              onChange={handleChange}
+            />
+            <div className="delete-item" onClick={deleteItem}>
               ×
             </div>
           </div>
@@ -46,29 +73,37 @@ const DraggableItem = ({ itemId, index, setId }: IProps) => {
       </Draggable>
       <style jsx>{`
         .item:first-of-type input {
-          font-size: 2rem;
-          font-weight: bold;
-          border: none;
+          color: black;
         }
         .item input {
-          font-size: 1rem;
-          font-weight: bold;
-          border: none;
+          height: 40px;
           padding-left: 0.5rem;
+          font-size: 2rem;
+          color: #646464;
+          font-weight: 800;
+          border: none;
+          transition: color 240ms ease-out;
         }
         .item {
+          padding: 4px 0;
           display: flex;
           align-items: center;
-          margin-left: 12px;
         }
         .item .handle {
-          width: 12px;
-          height: 80%;
+          width: 8px;
+          align-self: stretch;
           background-color: lightgray;
           border-radius: 2px;
+          opacity: 0;
+          transition: opacity 80ms ease-out;
         }
-        .item .delete {
+        .item .handle:hover {
+          opacity: 1;
+        }
+        .delete-item {
           cursor: pointer;
+          font-size: 1.4rem;
+          margin-right: 16px;
         }
       `}</style>
     </>

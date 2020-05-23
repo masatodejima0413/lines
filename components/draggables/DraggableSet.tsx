@@ -35,11 +35,11 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
   const addItem = () => {
     const newItem = new Item({});
     setItems(prev => ({ ...prev, [newItem.id]: newItem }));
-    newItem.save();
     setSets(prev => ({
       ...prev,
       [setId]: sets[setId].addItem(newItem.id),
     }));
+    newItem.save();
   };
 
   return (
@@ -52,11 +52,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
             ref={setsDraggableProvided.innerRef}
           >
             <div className="set-handle" {...setsDraggableProvided.dragHandleProps} />
-            <button type="button" onClick={deleteSet}>
-              -
-            </button>
-
-            <Droppable droppableId={setId} direction="horizontal" type={DragDropType.ITEM}>
+            <Droppable droppableId={setId} type={DragDropType.ITEM}>
               {(itemsDroppableProvided: DroppableProvided) => (
                 <div
                   className="item-droppable-container"
@@ -65,44 +61,63 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                 >
                   {set.itemIds.map((itemId, index) => {
                     return (
-                      <DraggableItem key={itemId} itemId={itemId} index={index} setId={setId} />
+                      <DraggableItem
+                        key={itemId}
+                        itemId={itemId}
+                        index={index}
+                        setId={setId}
+                        addItem={addItem}
+                      />
                     );
                   })}
                   {itemsDroppableProvided.placeholder}
+                  <div className="add-item" onClick={addItem}>
+                    + Add new item
+                  </div>
                 </div>
               )}
             </Droppable>
-
-            <button type="button" onClick={addItem}>
-              +
-            </button>
+            <div className="delete-set" onClick={deleteSet}>
+              Delete set
+            </div>
           </div>
         )}
       </Draggable>
       <style jsx>{`
         .set-handle {
-          width: 18px;
-          height: 80%;
-          background-color: lightgray;
+          width: 12px;
+          align-self: stretch;
           border-radius: 2px;
+          background-color: lightgray;
+          opacity: 0;
+          transition: opacity 80ms ease-out;
+          margin-right: 8px;
         }
         .set-handle:hover {
-          background-color: darkgray;
+          opacity: 1;
         }
         .set {
-          height: 60px;
-          margin-bottom: 1.5rem;
           display: flex;
-          align-items: center;
-          font-weight: bold;
+          padding: 20px 0;
         }
-        .item-droppable-container {
-          display: flex;
+        .delete-set {
+          cursor: pointer;
+          align-self: start;
         }
-        .set button {
+        .delete-set:hover {
+          opacity: 0.4;
+        }
+        .add-item {
+          opacity: 0.4;
+          height: 40px;
+          line-height: 40px;
+          padding-left: 16px;
           border: none;
           font-size: 1.5rem;
           cursor: pointer;
+        }
+        .add-item:hover {
+          text-decoration: underline;
         }
       `}</style>
     </>

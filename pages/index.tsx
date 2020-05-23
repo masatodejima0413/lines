@@ -80,6 +80,7 @@ const Home = () => {
         }
         *:focus {
           outline: 0;
+          background-color: cornsilk;
         }
       `}</style>
     </div>
