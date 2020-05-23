@@ -23,7 +23,7 @@ const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
 
   const deleteItem = () => {
     items[itemId].delete();
-    setItems(omit(items, itemId));
+    setItems(omit(items, [itemId]));
     const updatedItemIds = sets[setId].itemIds.filter(argItemId => argItemId !== itemId);
     setSets(prev => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
   };
@@ -35,7 +35,7 @@ const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
       deleteItem();
     }
     // 13: Enter key
-    if (metaKey && keyCode === 13) {
+    if (metaKey && keyCode === 13 && target.value.length) {
       addItem();
     }
   };

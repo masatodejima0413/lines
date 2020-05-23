@@ -24,11 +24,11 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
 
   const deleteSet = () => {
     sets[setId].delete(currentView.id);
-    setSets(omit(sets, setId));
+    setSets(omit(sets, [setId]));
     const updatedSetIds = currentView.setIds.filter(argSetId => argSetId !== setId);
     setCurrentView(prev => new View({ ...prev, setIds: updatedSetIds }));
     sets[setId].itemIds.forEach(itemId => {
-      setItems(omit(items, itemId));
+      setItems(omit(items, [itemId]));
     });
   };
 
