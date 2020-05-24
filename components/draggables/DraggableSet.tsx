@@ -25,7 +25,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
   const deleteSet = () => {
     sets[setId].delete(currentView.id);
     setSets(omit(sets, [setId]));
-    const updatedSetIds = currentView.setIds.filter(argSetId => argSetId !== setId);
+    const updatedSetIds = currentView.setIds.filter(id => id !== setId);
     setCurrentView(prev => new View({ ...prev, setIds: updatedSetIds }));
     sets[setId].itemIds.forEach(itemId => {
       setItems(omit(items, [itemId]));
@@ -68,39 +68,43 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                           index={index}
                           setId={setId}
                           addItem={addItem}
+                          deleteSet={deleteSet}
                         />
                       );
                     })}
                     {itemsDroppableProvided.placeholder}
-                    <div className="add-item" onClick={addItem}>
-                      + Add new item
-                    </div>
+                    <button type="button" className="add-item" onClick={addItem}>
+                      + Add
+                    </button>
                   </div>
                 );
               }}
             </Droppable>
-            <div className="delete-set" onClick={deleteSet}>
+            {/* <div className="delete-set" onClick={deleteSet}>
               Delete set
-            </div>
+            </div> */}
           </div>
         )}
       </Draggable>
       <style jsx>{`
+        .set {
+          display: flex;
+          padding: 20px 0;
+        }
         .set-handle {
-          width: 12px;
+          width: 8px;
           align-self: stretch;
-          border-radius: 2px;
           background-color: lightgray;
           opacity: 0;
           transition: opacity 80ms ease-out;
           margin-right: 8px;
         }
-        .set-handle:hover {
+        .set-handle:hover,
+        .set-handle:focus {
           opacity: 1;
         }
-        .set {
-          display: flex;
-          padding: 20px 0;
+        .set:hover .set-handle {
+          opacity: 1;
         }
         .delete-set {
           cursor: pointer;
@@ -110,14 +114,15 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
           opacity: 0.4;
         }
         .add-item {
-          opacity: 0.4;
-          height: 40px;
+          opacity: 0;
+          font-size: 1rem;
           width: 60vw;
           line-height: 40px;
           padding-left: 16px;
-          border: none;
-          font-size: 1.5rem;
-          cursor: pointer;
+        }
+        .set:focus-within .add-item,
+        .set:hover .add-item {
+          opacity: 0.4;
         }
         .add-item:hover {
           text-decoration: underline;

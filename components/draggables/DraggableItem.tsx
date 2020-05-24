@@ -3,14 +3,19 @@ import React, { ChangeEvent, useContext, useRef } from 'react';
 import { Draggable, DraggableProvided } from 'react-beautiful-dnd';
 import { ViewContext } from '../context/ViewContextProvider';
 
+const DELETE_KEY_CODE = 8;
+const ENTER_KEY_CODE = 13;
+const ESC_KEY_CODE = 27;
+
 interface IProps {
   itemId: string;
   index: number;
   setId: string;
   addItem: () => void;
+  deleteSet: () => void;
 }
 
-const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
+const DraggableItem = ({ itemId, index, setId, addItem, deleteSet }: IProps) => {
   const { sets, setSets, items, setItems } = useContext(ViewContext);
   const itemRef = useRef<HTMLInputElement>();
 
@@ -25,22 +30,23 @@ const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
   const deleteItem = () => {
     items[itemId].delete();
     setItems(omit(items, [itemId]));
-    const updatedItemIds = sets[setId].itemIds.filter(argItemId => argItemId !== itemId);
-    setSets(prev => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
+    const updatedItemIds = sets[setId].itemIds.filter(id => id !== itemId);
+    if (updatedItemIds.length > 0) {
+      setSets(prev => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
+    } else {
+      deleteSet();
+    }
   };
 
   const handleKeydown = e => {
     const { keyCode, metaKey, target } = e;
-    // 8: Delete key
-    if (metaKey && keyCode === 8 && !target.value) {
+    if (metaKey && keyCode === DELETE_KEY_CODE && !target.value) {
       deleteItem();
     }
-    // 13: Enter key
-    if (metaKey && keyCode === 13 && target.value.length) {
+    if (metaKey && keyCode === ENTER_KEY_CODE && target.value.length) {
       addItem();
     }
-    if (keyCode === 27) {
-      // 27: Esc key
+    if (keyCode === ESC_KEY_CODE) {
       itemRef.current.blur();
     }
   };
@@ -70,9 +76,9 @@ const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
               onChange={handleChange}
               ref={itemRef}
             />
-            <div className="delete-item" onClick={deleteItem}>
-              ×
-            </div>
+            <button tabIndex={-1} type="button" className="delete-item" onClick={deleteItem}>
+              Delete
+            </button>
           </div>
         )}
       </Draggable>
@@ -99,17 +105,28 @@ const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
           width: 8px;
           align-self: stretch;
           background-color: lightgray;
-          border-radius: 2px;
           opacity: 0;
           transition: opacity 80ms ease-out;
         }
-        .item .handle:hover {
+        .item .handle:hover,
+        .item .handle:focus {
+          opacity: 1;
+        }
+        .item:hover .handle {
           opacity: 1;
         }
         .delete-item {
+          opacity: 0;
+          line-height: 40px;
           cursor: pointer;
-          font-size: 1.4rem;
+          font-size: 1rem;
           margin-right: 16px;
+        }
+        .delete-item:hover {
+          text-decoration: underline;
+        }
+        .item:hover .delete-item {
+          opacity: 0.4;
         }
       `}</style>
     </>
