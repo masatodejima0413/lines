@@ -110,6 +110,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
         .add-item {
           opacity: 0.4;
           height: 40px;
+          width: 60vw;
           line-height: 40px;
           padding-left: 16px;
           border: none;

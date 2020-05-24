@@ -77,6 +77,7 @@ const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
         }
         .item input {
           height: 40px;
+          width: 60vw;
           padding-left: 0.5rem;
           font-size: 2rem;
           color: #646464;
