@@ -8,9 +8,11 @@ interface IProps {
   index: number;
   setId: string;
   addItem: () => void;
+  itemRef: any;
+  refList: any[];
 }
 
-const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
+const DraggableItem = ({ itemId, index, setId, addItem, itemRef, refList }: IProps) => {
   const { sets, setSets, items, setItems } = useContext(ViewContext);
 
   const item = items[itemId];
@@ -26,6 +28,8 @@ const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
     setItems(omit(items, [itemId]));
     const updatedItemIds = sets[setId].itemIds.filter(argItemId => argItemId !== itemId);
     setSets(prev => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
+
+    focusPreviousItem();
   };
 
   const handleKeydown = e => {
@@ -47,6 +51,12 @@ const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
     e.target.removeEventListener('keydown', handleKeydown);
   };
 
+  const focusPreviousItem = () => {
+    if (refList.length > 0 && index > 0) {
+      refList[index - 1].current.focus();
+    }
+  };
+
   return (
     <>
       <Draggable key={itemId} draggableId={itemId} index={index}>
@@ -64,6 +74,7 @@ const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
               type="text"
               value={item.text}
               onChange={handleChange}
+              ref={itemRef}
             />
             <div className="delete-item" onClick={deleteItem}>
               ×

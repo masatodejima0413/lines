@@ -53,29 +53,36 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
           >
             <div className="set-handle" {...setsDraggableProvided.dragHandleProps} />
             <Droppable droppableId={setId} type={DragDropType.ITEM}>
-              {(itemsDroppableProvided: DroppableProvided) => (
-                <div
-                  className="item-droppable-container"
-                  ref={itemsDroppableProvided.innerRef}
-                  {...itemsDroppableProvided.droppableProps}
-                >
-                  {set.itemIds.map((itemId, index) => {
-                    return (
-                      <DraggableItem
-                        key={itemId}
-                        itemId={itemId}
-                        index={index}
-                        setId={setId}
-                        addItem={addItem}
-                      />
-                    );
-                  })}
-                  {itemsDroppableProvided.placeholder}
-                  <div className="add-item" onClick={addItem}>
-                    + Add new item
+              {(itemsDroppableProvided: DroppableProvided) => {
+                const refList = [];
+                return (
+                  <div
+                    className="item-droppable-container"
+                    ref={itemsDroppableProvided.innerRef}
+                    {...itemsDroppableProvided.droppableProps}
+                  >
+                    {set.itemIds.map((itemId, index) => {
+                      const itemRef = React.createRef<HTMLInputElement>();
+                      refList.push(itemRef);
+                      return (
+                        <DraggableItem
+                          key={itemId}
+                          itemId={itemId}
+                          index={index}
+                          setId={setId}
+                          addItem={addItem}
+                          itemRef={itemRef}
+                          refList={refList}
+                        />
+                      );
+                    })}
+                    {itemsDroppableProvided.placeholder}
+                    <div className="add-item" onClick={addItem}>
+                      + Add new item
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              }}
             </Droppable>
             <div className="delete-set" onClick={deleteSet}>
               Delete set
