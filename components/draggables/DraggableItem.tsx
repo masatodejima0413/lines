@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import React, { ChangeEvent, useContext, useEffect } from 'react';
+import React, { ChangeEvent, useContext, useEffect, useRef } from 'react';
 import { Draggable, DraggableProvided } from 'react-beautiful-dnd';
 import { ViewContext } from '../context/ViewContextProvider';
 
@@ -13,7 +13,7 @@ interface IProps {
 
 const DraggableItem = ({ itemId, index, setId, addItem, isLastItem }: IProps) => {
   const { sets, setSets, items, setItems } = useContext(ViewContext);
-  const itemRef = React.createRef<HTMLInputElement>();
+  const itemRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
     if (itemRef.current) {
