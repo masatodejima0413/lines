@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import React, { ChangeEvent, useContext } from 'react';
+import React, { ChangeEvent, useContext, useEffect } from 'react';
 import { Draggable, DraggableProvided } from 'react-beautiful-dnd';
 import { ViewContext } from '../context/ViewContextProvider';
 
@@ -8,12 +8,18 @@ interface IProps {
   index: number;
   setId: string;
   addItem: () => void;
-  itemRef: any;
-  refList: any[];
+  isLastItem: boolean;
 }
 
-const DraggableItem = ({ itemId, index, setId, addItem, itemRef, refList }: IProps) => {
+const DraggableItem = ({ itemId, index, setId, addItem, isLastItem }: IProps) => {
   const { sets, setSets, items, setItems } = useContext(ViewContext);
+  const itemRef = React.createRef<HTMLInputElement>();
+
+  useEffect(() => {
+    if (itemRef.current) {
+      itemRef.current.focus();
+    }
+  }, [sets[setId].itemIds.length]);
 
   const item = items[itemId];
   if (!item) return null;
@@ -28,8 +34,6 @@ const DraggableItem = ({ itemId, index, setId, addItem, itemRef, refList }: IPro
     setItems(omit(items, [itemId]));
     const updatedItemIds = sets[setId].itemIds.filter(argItemId => argItemId !== itemId);
     setSets(prev => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
-
-    focusPreviousItem();
   };
 
   const handleKeydown = e => {
@@ -51,12 +55,6 @@ const DraggableItem = ({ itemId, index, setId, addItem, itemRef, refList }: IPro
     e.target.removeEventListener('keydown', handleKeydown);
   };
 
-  const focusPreviousItem = () => {
-    if (refList.length > 0 && index > 0) {
-      refList[index - 1].current.focus();
-    }
-  };
-
   return (
     <>
       <Draggable key={itemId} draggableId={itemId} index={index}>
@@ -68,13 +66,12 @@ const DraggableItem = ({ itemId, index, setId, addItem, itemRef, refList }: IPro
           >
             <div className="handle" {...itemsDraggableProvided.dragHandleProps} />
             <input
-              autoFocus
               onFocus={handleFocus}
               onBlur={handleBlur}
               type="text"
               value={item.text}
               onChange={handleChange}
-              ref={itemRef}
+              ref={isLastItem ? itemRef : null}
             />
             <div className="delete-item" onClick={deleteItem}>
               ×

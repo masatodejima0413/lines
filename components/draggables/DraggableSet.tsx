@@ -54,7 +54,6 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
             <div className="set-handle" {...setsDraggableProvided.dragHandleProps} />
             <Droppable droppableId={setId} type={DragDropType.ITEM}>
               {(itemsDroppableProvided: DroppableProvided) => {
-                const refList = [];
                 return (
                   <div
                     className="item-droppable-container"
@@ -62,8 +61,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                     {...itemsDroppableProvided.droppableProps}
                   >
                     {set.itemIds.map((itemId, index) => {
-                      const itemRef = React.createRef<HTMLInputElement>();
-                      refList.push(itemRef);
+                      const isLastItem = index === set.itemIds.length - 1;
                       return (
                         <DraggableItem
                           key={itemId}
@@ -71,8 +69,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                           index={index}
                           setId={setId}
                           addItem={addItem}
-                          itemRef={itemRef}
-                          refList={refList}
+                          isLastItem={isLastItem}
                         />
                       );
                     })}
