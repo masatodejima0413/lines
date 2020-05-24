@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import React, { ChangeEvent, useContext } from 'react';
+import React, { ChangeEvent, useContext, useEffect, useRef } from 'react';
 import { Draggable, DraggableProvided } from 'react-beautiful-dnd';
 import { ViewContext } from '../context/ViewContextProvider';
 
@@ -8,10 +8,18 @@ interface IProps {
   index: number;
   setId: string;
   addItem: () => void;
+  isLastItem: boolean;
 }
 
-const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
+const DraggableItem = ({ itemId, index, setId, addItem, isLastItem }: IProps) => {
   const { sets, setSets, items, setItems } = useContext(ViewContext);
+  const itemRef = useRef<HTMLInputElement>();
+
+  useEffect(() => {
+    if (itemRef.current) {
+      itemRef.current.focus();
+    }
+  }, [sets[setId].itemIds.length]);
 
   const item = items[itemId];
   if (!item) return null;
@@ -58,12 +66,12 @@ const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
           >
             <div className="handle" {...itemsDraggableProvided.dragHandleProps} />
             <input
-              autoFocus
               onFocus={handleFocus}
               onBlur={handleBlur}
               type="text"
               value={item.text}
               onChange={handleChange}
+              ref={isLastItem ? itemRef : null}
             />
             <div className="delete-item" onClick={deleteItem}>
               ×
