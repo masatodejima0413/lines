@@ -28,8 +28,8 @@ export default class View {
   save() {
     Views.doc(this.id)
       .set(viewConverter.toFirestore(this))
-      .then(() => console.log('Successfully created new view.'))
-      .catch(() => console.error('Failed to create view.'));
+      .then(() => console.log('Success: save view'))
+      .catch(() => console.error('Error: save view'));
   }
 
   addSet(setId: string) {
@@ -38,8 +38,8 @@ export default class View {
       .update({
         setIds: this.setIds,
       })
-      .then(() => console.log('Successfully updated item.'))
-      .catch(() => console.error('Failed to update item.'));
+      .then(() => console.log('Success: addSet to view.'))
+      .catch(() => console.error('Error: addSet to view'));
     return this;
   }
 
@@ -47,8 +47,8 @@ export default class View {
     this.setIds = setIds;
     Views.doc(this.id)
       .update({ setIds })
-      .then(() => console.log('Successfully updated item ids in set'))
-      .catch(() => console.error('Failed to update item ids in set'));
+      .then(() => console.log('Success: update setIds in view'))
+      .catch(() => console.error('Error: update setIds in view'));
     return this;
   }
 }

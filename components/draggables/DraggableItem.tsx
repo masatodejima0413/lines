@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import React, { ChangeEvent, useContext, useEffect, useRef } from 'react';
+import React, { ChangeEvent, useContext, useRef } from 'react';
 import { Draggable, DraggableProvided } from 'react-beautiful-dnd';
 import { ViewContext } from '../context/ViewContextProvider';
 
@@ -8,18 +8,11 @@ interface IProps {
   index: number;
   setId: string;
   addItem: () => void;
-  isLastItem: boolean;
 }
 
-const DraggableItem = ({ itemId, index, setId, addItem, isLastItem }: IProps) => {
+const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
   const { sets, setSets, items, setItems } = useContext(ViewContext);
   const itemRef = useRef<HTMLInputElement>();
-
-  useEffect(() => {
-    if (itemRef.current) {
-      itemRef.current.focus();
-    }
-  }, [sets[setId].itemIds.length]);
 
   const item = items[itemId];
   if (!item) return null;
@@ -46,6 +39,10 @@ const DraggableItem = ({ itemId, index, setId, addItem, isLastItem }: IProps) =>
     if (metaKey && keyCode === 13 && target.value.length) {
       addItem();
     }
+    if (keyCode === 27) {
+      // 27: Esc key
+      itemRef.current.blur();
+    }
   };
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -71,7 +68,7 @@ const DraggableItem = ({ itemId, index, setId, addItem, isLastItem }: IProps) =>
               type="text"
               value={item.text}
               onChange={handleChange}
-              ref={isLastItem ? itemRef : null}
+              ref={itemRef}
             />
             <div className="delete-item" onClick={deleteItem}>
               ×
