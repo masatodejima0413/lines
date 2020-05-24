@@ -24,22 +24,22 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
 
   const deleteSet = () => {
     sets[setId].delete(currentView.id);
-    setSets(omit(sets, setId));
+    setSets(omit(sets, [setId]));
     const updatedSetIds = currentView.setIds.filter(argSetId => argSetId !== setId);
     setCurrentView(prev => new View({ ...prev, setIds: updatedSetIds }));
     sets[setId].itemIds.forEach(itemId => {
-      setItems(omit(items, itemId));
+      setItems(omit(items, [itemId]));
     });
   };
 
   const addItem = () => {
     const newItem = new Item({});
     setItems(prev => ({ ...prev, [newItem.id]: newItem }));
-    newItem.save();
     setSets(prev => ({
       ...prev,
       [setId]: sets[setId].addItem(newItem.id),
     }));
+    newItem.save();
   };
 
   return (
@@ -51,12 +51,8 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
             {...setsDraggableProvided.draggableProps}
             ref={setsDraggableProvided.innerRef}
           >
-            <div {...setsDraggableProvided.dragHandleProps}>[setHandle]</div>
-            <button type="button" onClick={() => deleteSet()}>
-              -
-            </button>
-
-            <Droppable droppableId={setId} direction="horizontal" type={DragDropType.ITEM}>
+            <div className="set-handle" {...setsDraggableProvided.dragHandleProps} />
+            <Droppable droppableId={setId} type={DragDropType.ITEM}>
               {(itemsDroppableProvided: DroppableProvided) => (
                 <div
                   className="item-droppable-container"
@@ -65,35 +61,63 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                 >
                   {set.itemIds.map((itemId, index) => {
                     return (
-                      <DraggableItem key={itemId} itemId={itemId} index={index} setId={setId} />
+                      <DraggableItem
+                        key={itemId}
+                        itemId={itemId}
+                        index={index}
+                        setId={setId}
+                        addItem={addItem}
+                      />
                     );
                   })}
                   {itemsDroppableProvided.placeholder}
+                  <div className="add-item" onClick={addItem}>
+                    + Add new item
+                  </div>
                 </div>
               )}
             </Droppable>
-
-            <button type="button" onClick={addItem}>
-              +
-            </button>
+            <div className="delete-set" onClick={deleteSet}>
+              Delete set
+            </div>
           </div>
         )}
       </Draggable>
       <style jsx>{`
+        .set-handle {
+          width: 12px;
+          align-self: stretch;
+          border-radius: 2px;
+          background-color: lightgray;
+          opacity: 0;
+          transition: opacity 80ms ease-out;
+          margin-right: 8px;
+        }
+        .set-handle:hover {
+          opacity: 1;
+        }
         .set {
-          margin-bottom: 1.5rem;
           display: flex;
-          align-items: center;
-          border-left: 0.5rem solid #c4c4c4;
-          font-weight: bold;
+          padding: 20px 0;
         }
-        .item-droppable-container {
-          display: flex;
+        .delete-set {
+          cursor: pointer;
+          align-self: start;
         }
-        .set button {
+        .delete-set:hover {
+          opacity: 0.4;
+        }
+        .add-item {
+          opacity: 0.4;
+          height: 40px;
+          line-height: 40px;
+          padding-left: 16px;
           border: none;
           font-size: 1.5rem;
           cursor: pointer;
+        }
+        .add-item:hover {
+          text-decoration: underline;
         }
       `}</style>
     </>

@@ -7,9 +7,10 @@ interface IProps {
   itemId: string;
   index: number;
   setId: string;
+  addItem: () => void;
 }
 
-const DraggableItem = ({ itemId, index, setId }: IProps) => {
+const DraggableItem = ({ itemId, index, setId, addItem }: IProps) => {
   const { sets, setSets, items, setItems } = useContext(ViewContext);
 
   const item = items[itemId];
@@ -22,9 +23,28 @@ const DraggableItem = ({ itemId, index, setId }: IProps) => {
 
   const deleteItem = () => {
     items[itemId].delete();
-    setItems(omit(items, itemId));
+    setItems(omit(items, [itemId]));
     const updatedItemIds = sets[setId].itemIds.filter(argItemId => argItemId !== itemId);
     setSets(prev => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
+  };
+
+  const handleKeydown = e => {
+    const { keyCode, metaKey, target } = e;
+    // 8: Delete key
+    if (metaKey && keyCode === 8 && !target.value) {
+      deleteItem();
+    }
+    // 13: Enter key
+    if (metaKey && keyCode === 13 && target.value.length) {
+      addItem();
+    }
+  };
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.addEventListener('keydown', handleKeydown);
+  };
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.removeEventListener('keydown', handleKeydown);
   };
 
   return (
@@ -37,8 +57,15 @@ const DraggableItem = ({ itemId, index, setId }: IProps) => {
             ref={itemsDraggableProvided.innerRef}
           >
             <div className="handle" {...itemsDraggableProvided.dragHandleProps} />
-            <input type="text" value={item.text} onChange={handleChange} />
-            <div className="delete" onClick={deleteItem}>
+            <input
+              autoFocus
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              type="text"
+              value={item.text}
+              onChange={handleChange}
+            />
+            <div className="delete-item" onClick={deleteItem}>
               ×
             </div>
           </div>
@@ -46,31 +73,37 @@ const DraggableItem = ({ itemId, index, setId }: IProps) => {
       </Draggable>
       <style jsx>{`
         .item:first-of-type input {
-          height: 2.5rem;
-          font-size: 2rem;
-          margin: 1rem;
-          border: none;
+          color: black;
         }
         .item input {
-          font-size: 1rem;
-          height: 1.2rem;
-          border: none;
+          height: 40px;
           padding-left: 0.5rem;
-          border-left: 0.2rem solid #c4c4c4;
-          margin: 0.1rem;
+          font-size: 2rem;
+          color: #646464;
+          font-weight: 800;
+          border: none;
+          transition: color 240ms ease-out;
         }
         .item {
+          padding: 4px 0;
           display: flex;
           align-items: center;
         }
         .item .handle {
-          width: 20px;
-          height: 20px;
-          background-color: #ffddd2;
-          border-radius: 5px;
+          width: 8px;
+          align-self: stretch;
+          background-color: lightgray;
+          border-radius: 2px;
+          opacity: 0;
+          transition: opacity 80ms ease-out;
         }
-        .item .delete {
+        .item .handle:hover {
+          opacity: 1;
+        }
+        .delete-item {
           cursor: pointer;
+          font-size: 1.4rem;
+          margin-right: 16px;
         }
       `}</style>
     </>

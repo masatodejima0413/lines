@@ -37,65 +37,45 @@ const App = () => {
       setSets={setSets}
     >
       <div className="container">
-        <div className="main-wrapper">
-          <button className="add" type="button" onClick={addSet}>
-            +
-          </button>
-          <Droppable droppableId="all-sets" direction="vertical" type={DragDropType.SET}>
-            {(setsDroppableProvided: DroppableProvided) => (
-              <div {...setsDroppableProvided.droppableProps} ref={setsDroppableProvided.innerRef}>
-                {currentView.setIds.map((setId, setIndex) => (
-                  <DraggableSet key={setId} setId={setId} setIndex={setIndex} />
-                ))}
-                {setsDroppableProvided.placeholder}
-              </div>
-            )}
-          </Droppable>
-          <hr />
-          <div className="logout" onClick={handleLogout}>
-            Logout
-          </div>
+        <div className="add-set" onClick={addSet}>
+          +
+        </div>
+        <Droppable droppableId="all-sets" direction="vertical" type={DragDropType.SET}>
+          {(setsDroppableProvided: DroppableProvided) => (
+            <div {...setsDroppableProvided.droppableProps} ref={setsDroppableProvided.innerRef}>
+              {currentView.setIds.map((setId, setIndex) => (
+                <DraggableSet key={setId} setId={setId} setIndex={setIndex} />
+              ))}
+              {setsDroppableProvided.placeholder}
+            </div>
+          )}
+        </Droppable>
+        <hr />
+        <div className="logout" onClick={handleLogout}>
+          Logout
         </div>
       </div>
       <style jsx>{`
         .container {
           min-height: 100vh;
-          background-color: #e5e5e5;
-
           display: flex;
           flex-direction: column;
-          justify-content: center;
-          align-items: center;
+          padding: 12px;
         }
-        .main-wrapper {
-          padding: 3rem;
-          background-color: white;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-        }
-        .add {
-          border: none;
+        .add-set {
           font-size: 2.5rem;
+          width: 48px;
           display: block;
-          margin: 0 0 0 auto;
           cursor: pointer;
         }
         .logout {
-          margin: 0 auto;
-          background-color: #c4c4c4;
-          color: white;
-          border: 2px solid #c4c4c4;
-          font-weight: 600;
-          padding: 0.4rem 1rem;
+          position: fixed;
+          top: 16px;
+          right: 16px;
           cursor: pointer;
-          transition: all 0.3s ease;
         }
         .logout:hover {
-          background-color: white;
-          color: #c4c4c4;
-          border: 2px solid #c4c4c4;
+          text-decoration: underline;
         }
       `}</style>
     </DragDropContextProvider>
