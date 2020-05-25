@@ -56,6 +56,10 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet }: IProps) => 
   };
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     e.target.removeEventListener('keydown', handleKeydown);
+    const trimmedText = e.target.value.trim();
+    if (item.text !== trimmedText) {
+      setItems(prev => ({ ...prev, [itemId]: item.update(trimmedText) }));
+    }
   };
 
   return (
