@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
 import React, { useContext } from 'react';
-import { Droppable, DroppableProvided } from 'react-beautiful-dnd';
+import { Droppable, DroppableProvided, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import Item from '../data/data_model/item';
 import Set from '../data/data_model/set';
 import DragDropContextProvider from './context/DragDropContextProvider';
@@ -38,8 +38,18 @@ const App = () => {
     >
       <div className="container">
         <Droppable droppableId="all-sets" direction="vertical" type={DragDropType.SET}>
-          {(setsDroppableProvided: DroppableProvided) => (
-            <div {...setsDroppableProvided.droppableProps} ref={setsDroppableProvided.innerRef}>
+          {(
+            setsDroppableProvided: DroppableProvided,
+            setsDroppableSnapshot: DroppableStateSnapshot,
+          ) => (
+            <div
+              className="set-droppable-container"
+              {...setsDroppableProvided.droppableProps}
+              ref={setsDroppableProvided.innerRef}
+              style={{
+                backgroundColor: setsDroppableSnapshot.isDraggingOver ? '#f5f5f5' : 'inherit',
+              }}
+            >
               {currentView.setIds.map((setId, setIndex) => (
                 <DraggableSet key={setId} setId={setId} setIndex={setIndex} />
               ))}
@@ -73,6 +83,9 @@ const App = () => {
         .add-set:focus {
           opacity: 0.4;
           text-decoration: underline;
+        }
+        .set-droppable-container {
+          transition: all 240ms ease-out;
         }
         .logout {
           position: fixed;
