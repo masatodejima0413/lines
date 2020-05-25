@@ -1,6 +1,6 @@
 import { omit } from 'lodash';
 import React, { ChangeEvent, useContext, useRef } from 'react';
-import { Draggable, DraggableProvided } from 'react-beautiful-dnd';
+import { Draggable, DraggableProvided, DraggableStateSnapshot } from 'react-beautiful-dnd';
 import { ViewContext } from '../context/ViewContextProvider';
 
 const DELETE_KEY_CODE = 8;
@@ -61,7 +61,10 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet }: IProps) => 
   return (
     <>
       <Draggable key={itemId} draggableId={itemId} index={index}>
-        {(itemsDraggableProvided: DraggableProvided) => (
+        {(
+          itemsDraggableProvided: DraggableProvided,
+          itemsDraggableSnapshot: DraggableStateSnapshot,
+        ) => (
           <div
             className="item"
             {...itemsDraggableProvided.draggableProps}
@@ -69,6 +72,9 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet }: IProps) => 
           >
             <div className="handle" {...itemsDraggableProvided.dragHandleProps} />
             <input
+              style={{
+                boxShadow: itemsDraggableSnapshot.isDragging ? '0 0 15px rgba(0,0,0,.3)' : '',
+              }}
               onFocus={handleFocus}
               onBlur={handleBlur}
               type="text"
@@ -95,6 +101,7 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet }: IProps) => 
           font-weight: 800;
           border: none;
           transition: color 240ms ease-out;
+          transition: box-shadow 240ms ease-out;
         }
         .item {
           padding: 4px 0;

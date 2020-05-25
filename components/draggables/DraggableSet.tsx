@@ -1,6 +1,13 @@
 import { omit } from 'lodash';
 import React, { useContext } from 'react';
-import { Draggable, DraggableProvided, Droppable, DroppableProvided } from 'react-beautiful-dnd';
+import {
+  Draggable,
+  DraggableProvided,
+  Droppable,
+  DroppableProvided,
+  DraggableStateSnapshot,
+  DroppableStateSnapshot,
+} from 'react-beautiful-dnd';
 import Item from '../../data/data_model/item';
 import View from '../../data/data_model/view';
 import DraggableItem from './DraggableItem';
@@ -45,7 +52,10 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
   return (
     <>
       <Draggable draggableId={setId} index={setIndex} key={setId}>
-        {(setsDraggableProvided: DraggableProvided) => (
+        {(
+          setsDraggableProvided: DraggableProvided,
+          setsDraggableSnapshot: DraggableStateSnapshot,
+        ) => (
           <div
             className="set"
             {...setsDraggableProvided.draggableProps}
@@ -53,12 +63,21 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
           >
             <div className="set-handle" {...setsDraggableProvided.dragHandleProps} />
             <Droppable droppableId={setId} type={DragDropType.ITEM}>
-              {(itemsDroppableProvided: DroppableProvided) => {
+              {(
+                itemsDroppableProvided: DroppableProvided,
+                itemsDroppableSnapshot: DroppableStateSnapshot,
+              ) => {
                 return (
                   <div
                     className="item-droppable-container"
                     ref={itemsDroppableProvided.innerRef}
                     {...itemsDroppableProvided.droppableProps}
+                    style={{
+                      boxShadow: setsDraggableSnapshot.isDragging ? '0 0 15px rgba(0,0,0,.3)' : '',
+                      backgroundColor: itemsDroppableSnapshot.isDraggingOver
+                        ? '#f5f5f5'
+                        : 'inherit',
+                    }}
                   >
                     {set.itemIds.map((itemId, index) => {
                       return (
@@ -105,6 +124,9 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
         }
         .set:hover .set-handle {
           opacity: 1;
+        }
+        .item-droppable-container {
+          transition: all 240ms ease-out;
         }
         .delete-set {
           cursor: pointer;
