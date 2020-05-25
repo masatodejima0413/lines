@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { DragDropType } from '../draggables/DraggableSet';
+import View from '../../data/data_model/view';
 
 interface IProps {
   currentView: any;
@@ -43,9 +44,11 @@ const DragDropContextProvider = ({
           draggableId,
           array: currentView.setIds,
         });
-        const updatedView = currentView.update(updatedSetIds);
-        // ↓これが発火してない、コメントアウトしても全く同じ挙動する
-        setCurrentView(updatedView);
+        // const updatedView = currentView.update(updatedSetIds);
+        //  setCurrentView(updatedView)
+        //  ↑ not working
+        currentView.update(updatedSetIds);
+        setCurrentView(prev => new View({ ...prev, setIds: updatedSetIds }));
       }
     } else {
       if (type === DragDropType.ITEM) {
