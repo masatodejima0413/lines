@@ -3,15 +3,15 @@ import React, { useContext } from 'react';
 import {
   Draggable,
   DraggableProvided,
+  DraggableStateSnapshot,
   Droppable,
   DroppableProvided,
-  DraggableStateSnapshot,
   DroppableStateSnapshot,
 } from 'react-beautiful-dnd';
 import Item from '../../data/data_model/item';
 import View from '../../data/data_model/view';
-import DraggableItem from './DraggableItem';
 import { ViewContext } from '../context/ViewContextProvider';
+import DraggableItem from './DraggableItem';
 
 export enum DragDropType {
   SET = 'SET',
