@@ -74,9 +74,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                     {...itemsDroppableProvided.droppableProps}
                     style={{
                       boxShadow: setsDraggableSnapshot.isDragging ? '0 0 15px rgba(0,0,0,.3)' : '',
-                      backgroundColor: itemsDroppableSnapshot.isDraggingOver
-                        ? '#f5f5f5'
-                        : 'inherit',
+                      backgroundColor: itemsDroppableSnapshot.isDraggingOver ? '#f5f5f5' : 'white',
                     }}
                   >
                     {set.itemIds.map((itemId, index) => {
