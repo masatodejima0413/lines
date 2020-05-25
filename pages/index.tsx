@@ -80,6 +80,7 @@ const Home = () => {
         }
         *:focus {
           filter: invert(100%);
+          outline: none;
         }
         button {
           border: none;

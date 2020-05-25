@@ -83,6 +83,7 @@ const App = () => {
         .add-set:focus {
           opacity: 0.4;
           text-decoration: underline;
+        }
         .set-droppable-container {
           transition: all 240ms ease-out;
         }
