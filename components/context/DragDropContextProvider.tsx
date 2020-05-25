@@ -44,6 +44,7 @@ const DragDropContextProvider = ({
           array: currentView.setIds,
         });
         const updatedView = currentView.update(updatedSetIds);
+        // ↓これが発火してない、コメントアウトしても全く同じ挙動する
         setCurrentView(updatedView);
       }
     } else {
