@@ -79,8 +79,12 @@ const Home = () => {
           box-sizing: border-box;
         }
         *:focus {
-          outline: 0;
           filter: invert(100%);
+        }
+        button {
+          border: none;
+          cursor: pointer;
+          text-align: left;
         }
       `}</style>
     </div>

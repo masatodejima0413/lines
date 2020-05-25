@@ -26,7 +26,7 @@ const App = () => {
   };
 
   if (!currentView) {
-    return <h2>Loading...</h2>;
+    return <h1>⏱</h1>;
   }
 
   return (
@@ -37,9 +37,6 @@ const App = () => {
       setSets={setSets}
     >
       <div className="container">
-        <div className="add-set" onClick={addSet}>
-          +
-        </div>
         <Droppable droppableId="all-sets" direction="vertical" type={DragDropType.SET}>
           {(setsDroppableProvided: DroppableProvided) => (
             <div {...setsDroppableProvided.droppableProps} ref={setsDroppableProvided.innerRef}>
@@ -47,26 +44,35 @@ const App = () => {
                 <DraggableSet key={setId} setId={setId} setIndex={setIndex} />
               ))}
               {setsDroppableProvided.placeholder}
+              <button type="button" className="add-set" onClick={addSet}>
+                + Add
+              </button>
             </div>
           )}
         </Droppable>
-        <hr />
-        <div className="logout" onClick={handleLogout}>
-          Logout
-        </div>
+      </div>
+      <div className="logout" onClick={handleLogout}>
+        Logout
       </div>
       <style jsx>{`
         .container {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
-          padding: 12px;
+          padding: 16px;
         }
         .add-set {
-          font-size: 2.5rem;
-          width: 48px;
-          display: block;
+          opacity: 0;
+          width: 60vw;
+          line-height: 40px;
+          padding-left: 16px;
+          font-size: 1.6rem;
           cursor: pointer;
+        }
+        .add-set:hover,
+        .add-set:focus {
+          opacity: 0.4;
+          text-decoration: underline;
         }
         .logout {
           position: fixed;
