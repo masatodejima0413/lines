@@ -46,7 +46,7 @@ const DragDropContextProvider = ({
         });
         // const updatedView = currentView.update(updatedSetIds);
         //  setCurrentView(updatedView)
-        //  ↑ not working
+        //  ↑ not working!!
         currentView.update(updatedSetIds);
         setCurrentView(prev => new View({ ...prev, setIds: updatedSetIds }));
       }
