@@ -32,24 +32,24 @@ export default class Item {
   save() {
     Items.doc(this.id)
       .set(itemConverter.toFirestore(this))
-      .then(() => console.log('Successfully added new item.'))
-      .catch(() => console.error('Failed to add item.'));
+      .then(() => console.log('Success: save item'))
+      .catch(() => console.error('Error: add item'));
   }
 
   update(text: string) {
     this.text = text;
     Items.doc(this.id)
       .update({ text, updatedAt: firebase.firestore.Timestamp.now() })
-      .then(() => console.log('Successfully updated item.'))
-      .catch(() => console.error('Failed to update item.'));
+      .then(() => console.log('Success: update item'))
+      .catch(() => console.error('Error: update item.'));
     return this;
   }
 
   delete() {
     Items.doc(this.id)
       .delete()
-      .then(() => console.log('Successfully deleted item.'))
-      .catch(() => console.error('Failed to delete item.'));
+      .then(() => console.log('Success: delete item'))
+      .catch(() => console.error('Error: delete item'));
   }
 }
 

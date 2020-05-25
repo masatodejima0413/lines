@@ -61,7 +61,6 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                     {...itemsDroppableProvided.droppableProps}
                   >
                     {set.itemIds.map((itemId, index) => {
-                      const isLastItem = index === set.itemIds.length - 1;
                       return (
                         <DraggableItem
                           key={itemId}
@@ -69,7 +68,6 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                           index={index}
                           setId={setId}
                           addItem={addItem}
-                          isLastItem={isLastItem}
                         />
                       );
                     })}

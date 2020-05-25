@@ -28,8 +28,8 @@ export default class Set {
   save() {
     Sets.doc(this.id)
       .set(setConverter.toFirestore(this))
-      .then(() => console.log('Successfully created new Set.'))
-      .catch(() => console.error('Failed to create Set.'));
+      .then(() => console.log('Success: save set'))
+      .catch(() => console.error('Error: save set'));
   }
 
   addItem(itemId: string) {
@@ -38,8 +38,8 @@ export default class Set {
       .update({
         itemIds: this.itemIds,
       })
-      .then(() => console.log('Successfully updated item.'))
-      .catch(() => console.error('Failed to update item.'));
+      .then(() => console.log('Success: add itemId to set'))
+      .catch(() => console.error('Error: add itemId to set'));
     return this;
   }
 
@@ -47,24 +47,24 @@ export default class Set {
     this.itemIds = itemIds;
     Sets.doc(this.id)
       .update({ itemIds })
-      .then(() => console.log('Successfully updated item ids in set'))
-      .catch(() => console.error('Failed to update item ids in set'));
+      .then(() => console.log('Success: update itemIds in set'))
+      .catch(() => console.error('Error: update itemIds in set'));
     return this;
   }
 
   delete(viewId) {
     Sets.doc(this.id)
       .delete()
-      .then(() => console.log('Successfully deleted set.'))
-      .catch(() => console.error('Failed to delete set.'));
+      .then(() => console.log('Success: delete set'))
+      .catch(() => console.error('Error: delete set'));
     Views.doc(viewId).update({
       setIds: firebase.firestore.FieldValue.arrayRemove(this.id),
     });
     this.itemIds.forEach(itemId => {
       Items.doc(itemId)
         .delete()
-        .then(() => console.log('Successfully deleted item.'))
-        .catch(() => console.error('Failed to delete item.'));
+        .then(() => console.log('Success: delete item'))
+        .catch(() => console.error('Error: delete item'));
     });
   }
 }
