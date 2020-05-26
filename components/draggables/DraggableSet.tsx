@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import {
   Draggable,
   DraggableProvided,
@@ -12,6 +12,7 @@ import Item from '../../data/data_model/item';
 import View from '../../data/data_model/view';
 import { ViewContext } from '../context/ViewContextProvider';
 import DraggableItem from './DraggableItem';
+import { UP_ARROW_KEY_CODE } from '../../constants/keyCode';
 
 export enum DragDropType {
   SET = 'SET',
@@ -24,17 +25,28 @@ interface IProps {
 }
 
 const DraggableSet = ({ setId, setIndex }: IProps) => {
-  const { currentView, setCurrentView, sets, setSets, items, setItems } = useContext(ViewContext);
+  const addItemRef = useRef();
+
+  const {
+    currentView,
+    setCurrentView,
+    sets,
+    setSets,
+    items,
+    setItems,
+    itemRefs,
+    setFocussedId,
+  } = useContext(ViewContext);
 
   const set = sets[setId];
   if (!set) return null;
 
   const deleteSet = () => {
-    sets[setId].delete(currentView.id);
+    set.delete(currentView.id);
     setSets(omit(sets, [setId]));
     const updatedSetIds = currentView.setIds.filter(id => id !== setId);
     setCurrentView(prev => new View({ ...prev, setIds: updatedSetIds }));
-    sets[setId].itemIds.forEach(itemId => {
+    set.itemIds.forEach(itemId => {
       setItems(omit(items, [itemId]));
     });
   };
@@ -44,10 +56,23 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
     setItems(prev => ({ ...prev, [newItem.id]: newItem }));
     setSets(prev => ({
       ...prev,
-      [setId]: sets[setId].addItem(newItem.id),
+      [setId]: set.addItem(newItem.id),
     }));
     newItem.save();
+    setFocussedId(newItem.id);
   };
+
+  const handleAddItemKeydown = e => {
+    const { keyCode } = e;
+    const lastItemRef = itemRefs[set.itemIds[set.itemIds.length - 1]];
+    if (keyCode === UP_ARROW_KEY_CODE) {
+      e.preventDefault();
+      lastItemRef.current.focus();
+    }
+  };
+
+  const lastItem = items[set.itemIds[set.itemIds.length - 1]];
+  const isLastItemEmpty = lastItem.text.length < 1;
 
   return (
     <>
@@ -86,13 +111,22 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                           setId={setId}
                           addItem={addItem}
                           deleteSet={deleteSet}
+                          addItemRef={addItemRef}
                         />
                       );
                     })}
                     {itemsDroppableProvided.placeholder}
-                    <button type="button" className="add-item" onClick={addItem}>
-                      + Add
-                    </button>
+                    {!isLastItemEmpty && (
+                      <button
+                        ref={addItemRef}
+                        onKeyDown={handleAddItemKeydown}
+                        type="button"
+                        className="add-item"
+                        onClick={addItem}
+                      >
+                        + Add
+                      </button>
+                    )}
                   </div>
                 );
               }}

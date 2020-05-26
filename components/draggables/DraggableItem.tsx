@@ -1,11 +1,14 @@
 import { omit } from 'lodash';
-import React, { ChangeEvent, useContext, useRef } from 'react';
+import React, { ChangeEvent, useContext, useRef, useEffect, RefObject } from 'react';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from 'react-beautiful-dnd';
 import { ViewContext } from '../context/ViewContextProvider';
-
-const DELETE_KEY_CODE = 8;
-const ENTER_KEY_CODE = 13;
-const ESC_KEY_CODE = 27;
+import {
+  DELETE_KEY_CODE,
+  ENTER_KEY_CODE,
+  ESC_KEY_CODE,
+  UP_ARROW_KEY_CODE,
+  DOWN_ARROW_KEY_CODE,
+} from '../../constants/keyCode';
 
 interface IProps {
   itemId: string;
@@ -13,13 +16,27 @@ interface IProps {
   setId: string;
   addItem: () => void;
   deleteSet: () => void;
+  addItemRef: RefObject<HTMLButtonElement>;
 }
 
-const DraggableItem = ({ itemId, index, setId, addItem, deleteSet }: IProps) => {
-  const { sets, setSets, items, setItems } = useContext(ViewContext);
-  const itemRef = useRef<HTMLInputElement>();
-
+const DraggableItem = ({ itemId, index, setId, addItem, deleteSet, addItemRef }: IProps) => {
+  const { sets, setSets, items, setItems, itemRefs, setItemRefs, focussedId } = useContext(
+    ViewContext,
+  );
+  const set = sets[setId];
   const item = items[itemId];
+  const itemRef = useRef<HTMLInputElement>();
+  const isLastItem = index === set.itemIds.length - 1;
+  const prevItemId = set.itemIds[index - 1];
+  const nextItemId = set.itemIds[index + 1];
+
+  useEffect(() => {
+    setItemRefs(prev => ({ ...prev, [itemId]: itemRef }));
+    if (focussedId === itemId) {
+      itemRef.current.focus();
+    }
+  }, []);
+
   if (!item) return null;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -40,22 +57,34 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet }: IProps) => 
 
   const handleKeydown = e => {
     const { keyCode, metaKey, target } = e;
+
     if (metaKey && keyCode === DELETE_KEY_CODE && !target.value) {
+      e.preventDefault();
       deleteItem();
+      itemRefs[prevItemId].current.focus();
     }
-    if (metaKey && keyCode === ENTER_KEY_CODE && target.value.length) {
+    if (isLastItem && metaKey && keyCode === ENTER_KEY_CODE && target.value.length) {
       addItem();
     }
     if (keyCode === ESC_KEY_CODE) {
       itemRef.current.blur();
     }
+    if (prevItemId && keyCode === UP_ARROW_KEY_CODE) {
+      e.preventDefault();
+      itemRefs[prevItemId].current.focus();
+    }
+    if (keyCode === DOWN_ARROW_KEY_CODE) {
+      e.preventDefault();
+      if (nextItemId) {
+        itemRefs[nextItemId].current.focus();
+      }
+      if (isLastItem && item.text.length) {
+        addItemRef.current.focus();
+      }
+    }
   };
 
-  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.addEventListener('keydown', handleKeydown);
-  };
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.removeEventListener('keydown', handleKeydown);
     const trimmedText = e.target.value.trim();
     if (item.text !== trimmedText) {
       setItems(prev => ({ ...prev, [itemId]: item.update(trimmedText) }));
@@ -76,15 +105,15 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet }: IProps) => 
           >
             <div className="handle" {...itemsDraggableProvided.dragHandleProps} />
             <input
+              type="text"
+              ref={itemRef}
               style={{
                 boxShadow: itemsDraggableSnapshot.isDragging ? '0 0 15px rgba(0,0,0,.3)' : '',
               }}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              type="text"
+              onKeyDown={handleKeydown}
               value={item.text}
               onChange={handleChange}
-              ref={itemRef}
+              onBlur={handleBlur}
             />
             <button tabIndex={-1} type="button" className="delete-item" onClick={deleteItem}>
               Delete
