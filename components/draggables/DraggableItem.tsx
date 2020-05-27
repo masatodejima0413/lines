@@ -26,6 +26,7 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet, addItemRef }:
   const set = sets[setId];
   const item = items[itemId];
   const itemRef = useRef<HTMLInputElement>();
+  const isFirstItem = index === 0;
   const isLastItem = index === set.itemIds.length - 1;
   const prevItemId = set.itemIds[index - 1];
   const nextItemId = set.itemIds[index + 1];
@@ -61,10 +62,16 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet, addItemRef }:
     if (metaKey && keyCode === DELETE_KEY_CODE && !target.value) {
       e.preventDefault();
       deleteItem();
-      itemRefs[prevItemId].current.focus();
+      if (!isFirstItem) {
+        itemRefs[prevItemId].current.focus();
+      }
     }
-    if (isLastItem && metaKey && keyCode === ENTER_KEY_CODE && target.value.length) {
-      addItem();
+    if (metaKey && keyCode === ENTER_KEY_CODE && target.value.length) {
+      if (isLastItem) {
+        addItem();
+      } else {
+        itemRefs[nextItemId].current.focus();
+      }
     }
     if (keyCode === ESC_KEY_CODE) {
       itemRef.current.blur();
