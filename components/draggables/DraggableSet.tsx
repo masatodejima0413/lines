@@ -20,8 +20,8 @@ export enum DragDropType {
 }
 
 interface IProps {
-  setIndex: any;
-  setId: any;
+  setIndex: number;
+  setId: string;
 }
 
 const DraggableSet = ({ setId, setIndex }: IProps) => {

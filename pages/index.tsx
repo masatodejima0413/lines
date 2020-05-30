@@ -1,4 +1,5 @@
 import firebase, { User } from 'firebase/app';
+import Head from 'next/head';
 import React, { useContext, useEffect, useState } from 'react';
 import App from '../components/App';
 import { ViewContext } from '../components/context/ViewContextProvider';
@@ -65,6 +66,10 @@ const Home = () => {
   }, []);
   return (
     <div>
+      <Head>
+        <title>lines</title>
+        <link rel="icon" href="/logo.png" />
+      </Head>
       {user ? <App /> : <Login />}
       <style jsx global>{`
         html,
