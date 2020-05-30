@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, RefObject } from 'react';
 import View from '../../data/data_model/view';
 import Item from '../../data/data_model/item';
 import Set from '../../data/data_model/set';
@@ -10,6 +10,10 @@ interface IProps {
   setSets: React.Dispatch<React.SetStateAction<Set>>;
   items: { [id: string]: Item };
   setItems: React.Dispatch<React.SetStateAction<Item>>;
+  itemRefs: { [id: string]: RefObject<HTMLInputElement> };
+  setItemRefs: React.Dispatch<React.SetStateAction<RefObject<HTMLInputElement>>>;
+  focussedId: string;
+  setFocussedId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // @ts-ignore
@@ -17,16 +21,22 @@ export const ViewContext = createContext<IProps>({});
 
 export const ViewContextProvider = ({ children }) => {
   const [currentView, setCurrentView] = useState<View>();
-  const [items, setItems] = useState<{ [id: string]: Item }>({});
   const [sets, setSets] = useState<{ [id: string]: Set }>({});
+  const [items, setItems] = useState<{ [id: string]: Item }>({});
+  const [itemRefs, setItemRefs] = useState<{ [id: string]: RefObject<HTMLInputElement> }>({});
+  const [focussedId, setFocussedId] = useState<string>('');
 
   const value = {
     currentView,
     setCurrentView,
-    items,
-    setItems,
     sets,
     setSets,
+    items,
+    setItems,
+    itemRefs,
+    setItemRefs,
+    focussedId,
+    setFocussedId,
   };
 
   return <ViewContext.Provider value={value}>{children}</ViewContext.Provider>;
