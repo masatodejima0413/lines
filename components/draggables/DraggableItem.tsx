@@ -17,7 +17,7 @@ interface IProps {
   addItem: () => void;
   deleteSet: () => void;
   addItemRef: RefObject<HTMLButtonElement>;
-  isDraggingOver: boolean;
+  isDraggingOverSet: boolean;
 }
 
 const DraggableItem = ({
@@ -27,7 +27,7 @@ const DraggableItem = ({
   addItem,
   deleteSet,
   addItemRef,
-  isDraggingOver,
+  isDraggingOverSet,
 }: IProps) => {
   const {
     sets,
@@ -139,7 +139,7 @@ const DraggableItem = ({
         ) => (
           <div
             className={`item ${itemsDraggableSnapshot.isDragging ? 'dragging' : ''} ${
-              isDraggingOver ? 'dragging-over' : ''
+              isDraggingOverSet ? 'dragging-over-set' : ''
             }`}
             {...itemsDraggableProvided.draggableProps}
             ref={itemsDraggableProvided.innerRef}
@@ -201,7 +201,7 @@ const DraggableItem = ({
         .item:hover .handle {
           opacity: 1;
         }
-        .dragging-over:hover .handle {
+        .dragging-over-set:hover .handle {
           opacity: 0;
         }
         .delete-item {

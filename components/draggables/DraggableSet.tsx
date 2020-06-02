@@ -22,9 +22,10 @@ export enum DragDropType {
 interface IProps {
   setIndex: number;
   setId: string;
+  isDraggingOverView: boolean;
 }
 
-const DraggableSet = ({ setId, setIndex }: IProps) => {
+const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
   const addItemRef = useRef();
 
   const {
@@ -82,7 +83,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
           setsDraggableSnapshot: DraggableStateSnapshot,
         ) => (
           <div
-            className="set"
+            className={`set ${isDraggingOverView ? 'dragging-over-view' : ''}`}
             {...setsDraggableProvided.draggableProps}
             ref={setsDraggableProvided.innerRef}
           >
@@ -95,7 +96,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                 return (
                   <div
                     className={`item-droppable-container ${
-                      itemsDroppableSnapshot.isDraggingOver ? 'dragging-over' : ''
+                      itemsDroppableSnapshot.isDraggingOver ? 'dragging-over-set' : ''
                     } ${setsDraggableSnapshot.isDragging ? 'dragging' : ''}`}
                     ref={itemsDroppableProvided.innerRef}
                     {...itemsDroppableProvided.droppableProps}
@@ -110,7 +111,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                           addItem={addItem}
                           deleteSet={deleteSet}
                           addItemRef={addItemRef}
-                          isDraggingOver={itemsDroppableSnapshot.isDraggingOver}
+                          isDraggingOverSet={itemsDroppableSnapshot.isDraggingOver}
                         />
                       );
                     })}
@@ -156,6 +157,9 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
         .set:hover .set-handle {
           opacity: 1;
         }
+        .dragging-over-view:hover .set-handle {
+          opacity: 0;
+        }
         .item-droppable-container {
           transition: all 240ms ease-out;
           background-color: white;
@@ -163,7 +167,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
         .dragging {
           box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
         }
-        .dragging-over {
+        .dragging-over-set {
           background-color: #f5f5f5;
         }
         .delete-set {

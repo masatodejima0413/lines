@@ -43,15 +43,19 @@ const App = () => {
             setsDroppableSnapshot: DroppableStateSnapshot,
           ) => (
             <div
-              className="set-droppable-container"
+              className={`set-droppable-container ${
+                setsDroppableSnapshot.isDraggingOver ? 'dragging-over' : ''
+              }`}
               {...setsDroppableProvided.droppableProps}
               ref={setsDroppableProvided.innerRef}
-              style={{
-                backgroundColor: setsDroppableSnapshot.isDraggingOver ? '#f5f5f5' : 'inherit',
-              }}
             >
               {currentView.setIds.map((setId, setIndex) => (
-                <DraggableSet key={setId} setId={setId} setIndex={setIndex} />
+                <DraggableSet
+                  key={setId}
+                  setId={setId}
+                  setIndex={setIndex}
+                  isDraggingOverView={setsDroppableSnapshot.isDraggingOver}
+                />
               ))}
               {setsDroppableProvided.placeholder}
               <button type="button" className="add-set" onClick={addSet}>
@@ -86,6 +90,10 @@ const App = () => {
         }
         .set-droppable-container {
           transition: all 240ms ease-out;
+          background-color: white;
+        }
+        .dragging-over {
+          background-color: #f5f5f5;
         }
         .logout {
           position: fixed;
