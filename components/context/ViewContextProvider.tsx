@@ -12,6 +12,8 @@ interface IProps {
   setItems: React.Dispatch<React.SetStateAction<Item>>;
   itemRefs: { [id: string]: RefObject<HTMLInputElement> };
   setItemRefs: React.Dispatch<React.SetStateAction<RefObject<HTMLInputElement>>>;
+  handleRefs: { [id: string]: RefObject<HTMLInputElement> };
+  setHandleRefs: React.Dispatch<React.SetStateAction<RefObject<HTMLInputElement>>>;
   focussedId: string;
   setFocussedId: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -24,6 +26,7 @@ export const ViewContextProvider = ({ children }) => {
   const [sets, setSets] = useState<{ [id: string]: Set }>({});
   const [items, setItems] = useState<{ [id: string]: Item }>({});
   const [itemRefs, setItemRefs] = useState<{ [id: string]: RefObject<HTMLInputElement> }>({});
+  const [handleRefs, setHandleRefs] = useState<{ [id: string]: RefObject<HTMLInputElement> }>({});
   const [focussedId, setFocussedId] = useState<string>('');
 
   const value = {
@@ -35,6 +38,8 @@ export const ViewContextProvider = ({ children }) => {
     setItems,
     itemRefs,
     setItemRefs,
+    handleRefs,
+    setHandleRefs,
     focussedId,
     setFocussedId,
   };
