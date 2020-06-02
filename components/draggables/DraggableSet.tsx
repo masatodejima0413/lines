@@ -120,7 +120,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                         ref={addItemRef}
                         onKeyDown={handleAddItemKeydown}
                         type="button"
-                        className="add-item red"
+                        className="add-item"
                         onClick={addItem}
                       >
                         + Add
