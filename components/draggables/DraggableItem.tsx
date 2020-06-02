@@ -43,7 +43,7 @@ const DraggableItem = ({
   const set = sets[setId];
   const item = items[itemId];
   const itemRef = useRef<HTMLInputElement>();
-  const handleRef = useRef<HTMLInputElement>();
+  const handleRef = useRef<HTMLDivElement>();
   const isFirstItem = index === 0;
   const isLastItem = index === set.itemIds.length - 1;
   const prevItemId = set.itemIds[index - 1];
