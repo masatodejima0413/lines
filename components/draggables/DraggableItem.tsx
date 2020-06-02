@@ -17,15 +17,33 @@ interface IProps {
   addItem: () => void;
   deleteSet: () => void;
   addItemRef: RefObject<HTMLButtonElement>;
+  isDraggingOver: boolean;
 }
 
-const DraggableItem = ({ itemId, index, setId, addItem, deleteSet, addItemRef }: IProps) => {
-  const { sets, setSets, items, setItems, itemRefs, setItemRefs, focussedId } = useContext(
-    ViewContext,
-  );
+const DraggableItem = ({
+  itemId,
+  index,
+  setId,
+  addItem,
+  deleteSet,
+  addItemRef,
+  isDraggingOver,
+}: IProps) => {
+  const {
+    sets,
+    setSets,
+    items,
+    setItems,
+    itemRefs,
+    setItemRefs,
+    handleRefs,
+    setHandleRefs,
+    focussedId,
+  } = useContext(ViewContext);
   const set = sets[setId];
   const item = items[itemId];
   const itemRef = useRef<HTMLInputElement>();
+  const handleRef = useRef<HTMLInputElement>();
   const isFirstItem = index === 0;
   const isLastItem = index === set.itemIds.length - 1;
   const prevItemId = set.itemIds[index - 1];
@@ -33,6 +51,7 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet, addItemRef }:
 
   useEffect(() => {
     setItemRefs(prev => ({ ...prev, [itemId]: itemRef }));
+    setHandleRefs(prev => ({ ...prev, [itemId]: handleRef }));
     if (focussedId === itemId) {
       itemRef.current.focus();
     }
@@ -98,6 +117,19 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet, addItemRef }:
     }
   };
 
+  const handleHandleKeydown = e => {
+    const { keyCode } = e;
+
+    if (prevItemId && keyCode === UP_ARROW_KEY_CODE) {
+      e.preventDefault();
+      handleRefs[prevItemId].current.focus();
+    }
+    if (nextItemId && keyCode === DOWN_ARROW_KEY_CODE) {
+      e.preventDefault();
+      handleRefs[nextItemId].current.focus();
+    }
+  };
+
   return (
     <>
       <Draggable key={itemId} draggableId={itemId} index={index}>
@@ -106,17 +138,21 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet, addItemRef }:
           itemsDraggableSnapshot: DraggableStateSnapshot,
         ) => (
           <div
-            className="item"
+            className={`item ${itemsDraggableSnapshot.isDragging ? 'dragging' : ''} ${
+              isDraggingOver ? 'dragging-over' : ''
+            }`}
             {...itemsDraggableProvided.draggableProps}
             ref={itemsDraggableProvided.innerRef}
           >
-            <div className="handle" {...itemsDraggableProvided.dragHandleProps} />
+            <div
+              className="handle"
+              {...itemsDraggableProvided.dragHandleProps}
+              ref={handleRef}
+              onKeyDown={handleHandleKeydown}
+            />
             <input
               type="text"
               ref={itemRef}
-              style={{
-                boxShadow: itemsDraggableSnapshot.isDragging ? '0 0 15px rgba(0,0,0,.3)' : '',
-              }}
               onKeyDown={handleKeydown}
               value={item.text}
               onChange={handleChange}
@@ -143,6 +179,9 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet, addItemRef }:
           transition: color 240ms ease-out;
           transition: box-shadow 240ms ease-out;
         }
+        .dragging input {
+          box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
         .item {
           padding: 4px 0;
           display: flex;
@@ -161,6 +200,9 @@ const DraggableItem = ({ itemId, index, setId, addItem, deleteSet, addItemRef }:
         }
         .item:hover .handle {
           opacity: 1;
+        }
+        .dragging-over:hover .handle {
+          opacity: 0;
         }
         .delete-item {
           opacity: 0;

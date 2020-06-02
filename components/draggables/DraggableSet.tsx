@@ -94,13 +94,11 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
               ) => {
                 return (
                   <div
-                    className="item-droppable-container"
+                    className={`item-droppable-container ${
+                      itemsDroppableSnapshot.isDraggingOver ? 'dragging-over' : ''
+                    } ${setsDraggableSnapshot.isDragging ? 'dragging' : ''}`}
                     ref={itemsDroppableProvided.innerRef}
                     {...itemsDroppableProvided.droppableProps}
-                    style={{
-                      boxShadow: setsDraggableSnapshot.isDragging ? '0 0 15px rgba(0,0,0,.3)' : '',
-                      backgroundColor: itemsDroppableSnapshot.isDraggingOver ? '#f5f5f5' : 'white',
-                    }}
                   >
                     {set.itemIds.map((itemId, index) => {
                       return (
@@ -112,6 +110,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                           addItem={addItem}
                           deleteSet={deleteSet}
                           addItemRef={addItemRef}
+                          isDraggingOver={itemsDroppableSnapshot.isDraggingOver}
                         />
                       );
                     })}
@@ -121,7 +120,7 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
                         ref={addItemRef}
                         onKeyDown={handleAddItemKeydown}
                         type="button"
-                        className="add-item"
+                        className="add-item red"
                         onClick={addItem}
                       >
                         + Add
@@ -159,6 +158,13 @@ const DraggableSet = ({ setId, setIndex }: IProps) => {
         }
         .item-droppable-container {
           transition: all 240ms ease-out;
+          background-color: white;
+        }
+        .dragging {
+          box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+        .dragging-over {
+          background-color: #f5f5f5;
         }
         .delete-set {
           cursor: pointer;
