@@ -117,16 +117,18 @@ const DraggableItem = ({
     }
   };
 
-  const handleHandleKeydown = e => {
+  const handleHandleKeydown = (e, isDragging) => {
     const { keyCode } = e;
 
-    if (prevItemId && keyCode === UP_ARROW_KEY_CODE) {
-      e.preventDefault();
-      handleRefs[prevItemId].current.focus();
-    }
-    if (nextItemId && keyCode === DOWN_ARROW_KEY_CODE) {
-      e.preventDefault();
-      handleRefs[nextItemId].current.focus();
+    if (!isDragging) {
+      if (prevItemId && keyCode === UP_ARROW_KEY_CODE) {
+        e.preventDefault();
+        handleRefs[prevItemId].current.focus();
+      }
+      if (nextItemId && keyCode === DOWN_ARROW_KEY_CODE) {
+        e.preventDefault();
+        handleRefs[nextItemId].current.focus();
+      }
     }
   };
 
@@ -148,7 +150,9 @@ const DraggableItem = ({
               className="handle"
               {...itemsDraggableProvided.dragHandleProps}
               ref={handleRef}
-              onKeyDown={itemsDraggableSnapshot.isDragging ? null : handleHandleKeydown}
+              onKeyDown={e => {
+                handleHandleKeydown(e, itemsDraggableSnapshot.isDragging);
+              }}
             />
             <input
               type="text"
