@@ -39,7 +39,6 @@ const DraggableItem = ({
     handleRefs,
     setHandleRefs,
     focussedId,
-    setFocussedId,
   } = useContext(ViewContext);
   const set = sets[setId];
   const item = items[itemId];
@@ -133,7 +132,6 @@ const DraggableItem = ({
 
   const touchFocus = () => {
     itemRef.current.focus();
-    setFocussedId(itemId);
   };
 
   return (
@@ -164,6 +162,7 @@ const DraggableItem = ({
               onChange={handleChange}
               onBlur={handleBlur}
               onTouchStart={touchFocus}
+              onTouchEnd={null}
             />
             <button tabIndex={-1} type="button" className="delete-item" onClick={deleteItem}>
               Delete
