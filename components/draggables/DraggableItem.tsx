@@ -157,7 +157,7 @@ const DraggableItem = ({
               value={item.text}
               onChange={handleChange}
               onBlur={handleBlur}
-              onClick={() => itemRef.current.focus()}
+              onTouchStart={() => itemRef.current.focus()}
             />
             <button tabIndex={-1} type="button" className="delete-item" onClick={deleteItem}>
               Delete
