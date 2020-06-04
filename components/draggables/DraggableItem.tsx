@@ -170,13 +170,14 @@ const DraggableItem = ({
         }
         .item input {
           height: 40px;
-          line-height: 40px;
+          // line-height: 40px;
           width: 60vw;
           padding-left: 0.5rem;
           font-size: 2rem;
           color: #646464;
           font-weight: 800;
           border: none;
+          cursor: pointer;
           transition: color 240ms ease-out;
           transition: box-shadow 240ms ease-out;
         }
