@@ -148,7 +148,7 @@ const DraggableItem = ({
               className="handle"
               {...itemsDraggableProvided.dragHandleProps}
               ref={handleRef}
-              onKeyDown={handleHandleKeydown}
+              onKeyDown={itemsDraggableSnapshot.isDragging ? null : handleHandleKeydown}
             />
             <input
               type="text"
