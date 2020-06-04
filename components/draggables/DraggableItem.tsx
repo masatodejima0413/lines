@@ -8,6 +8,8 @@ import {
   ESC_KEY_CODE,
   UP_ARROW_KEY_CODE,
   DOWN_ARROW_KEY_CODE,
+  RIGHT_ARROW_KEY_CODE,
+  LEFT_ARROW_KEY_CODE,
 } from '../../constants/keyCode';
 
 interface IProps {
@@ -108,6 +110,12 @@ const DraggableItem = ({
         addItemRef.current.focus();
       }
     }
+    if (keyCode === LEFT_ARROW_KEY_CODE) {
+      if (itemRef.current.selectionStart === 0) {
+        e.preventDefault();
+        handleRefs[itemId].current.focus();
+      }
+    }
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -118,17 +126,19 @@ const DraggableItem = ({
   };
 
   const handleHandleKeydown = (e, isDragging) => {
+    if (isDragging) return;
     const { keyCode } = e;
 
-    if (!isDragging) {
-      if (prevItemId && keyCode === UP_ARROW_KEY_CODE) {
-        e.preventDefault();
-        handleRefs[prevItemId].current.focus();
-      }
-      if (nextItemId && keyCode === DOWN_ARROW_KEY_CODE) {
-        e.preventDefault();
-        handleRefs[nextItemId].current.focus();
-      }
+    if (prevItemId && keyCode === UP_ARROW_KEY_CODE) {
+      handleRefs[prevItemId].current.focus();
+    }
+    if (nextItemId && keyCode === DOWN_ARROW_KEY_CODE) {
+      handleRefs[nextItemId].current.focus();
+    }
+
+    if (keyCode === RIGHT_ARROW_KEY_CODE) {
+      e.preventDefault();
+      itemRefs[itemId].current.focus();
     }
   };
 
