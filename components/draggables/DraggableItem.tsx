@@ -132,9 +132,11 @@ const DraggableItem = ({
     const { keyCode } = e;
 
     if (prevItemId && keyCode === UP_ARROW_KEY_CODE) {
+      e.preventDefault();
       handleRefs[prevItemId].current.focus();
     }
     if (nextItemId && keyCode === DOWN_ARROW_KEY_CODE) {
+      e.preventDefault();
       handleRefs[nextItemId].current.focus();
     }
 
