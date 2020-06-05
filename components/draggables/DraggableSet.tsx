@@ -8,11 +8,11 @@ import {
   DroppableProvided,
   DroppableStateSnapshot,
 } from 'react-beautiful-dnd';
+import { UP_ARROW_KEY_CODE } from '../../constants/keyCode';
 import Item from '../../data/data_model/item';
 import View from '../../data/data_model/view';
 import { ViewContext } from '../context/ViewContextProvider';
-import DraggableItem from './DraggableItem';
-import { UP_ARROW_KEY_CODE } from '../../constants/keyCode';
+import DraggableItem, { itemHeight } from './DraggableItem';
 
 export enum DragDropType {
   SET = 'SET',
@@ -178,18 +178,30 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
           opacity: 0.4;
         }
         .add-item {
-          opacity: 0;
+          background-color: transparent;
+          color: transparent;
           font-size: 1rem;
           width: 60vw;
-          line-height: 40px;
-          padding-left: 16px;
+          line-height: ${itemHeight};
+          padding: 4px 16px 4px;
         }
-        .set:focus-within .add-item,
-        .set:hover .add-item {
-          opacity: 0.4;
+        .set:hover .add-item::before {
+          content: 'Add item';
+          color: darkgray;
+        }
+        .set:focus-within .add-item::before {
+          content: 'Cmd + Enter to add';
+          color: darkgray;
+        }
+        .set:focus-within .add-item:hover::before {
+          content: 'Add item';
+        }
+        .add-item:focus::before {
+          content: 'Press Enter to add' !important;
+          text-decoration: underline;
         }
         .add-item:hover {
-          text-decoration: underline;
+          background-color: #f5f5f5;
         }
       `}</style>
     </>

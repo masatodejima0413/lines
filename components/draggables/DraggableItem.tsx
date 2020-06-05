@@ -8,7 +8,11 @@ import {
   ESC_KEY_CODE,
   UP_ARROW_KEY_CODE,
   DOWN_ARROW_KEY_CODE,
+  RIGHT_ARROW_KEY_CODE,
+  LEFT_ARROW_KEY_CODE,
 } from '../../constants/keyCode';
+
+export const itemHeight = '42px';
 
 interface IProps {
   itemId: string;
@@ -108,6 +112,12 @@ const DraggableItem = ({
         addItemRef.current.focus();
       }
     }
+    if (keyCode === LEFT_ARROW_KEY_CODE) {
+      if (itemRef.current.selectionStart === 0) {
+        e.preventDefault();
+        handleRefs[itemId].current.focus();
+      }
+    }
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -118,17 +128,19 @@ const DraggableItem = ({
   };
 
   const handleHandleKeydown = (e, isDragging) => {
+    if (isDragging) return;
     const { keyCode } = e;
 
-    if (!isDragging) {
-      if (prevItemId && keyCode === UP_ARROW_KEY_CODE) {
-        e.preventDefault();
-        handleRefs[prevItemId].current.focus();
-      }
-      if (nextItemId && keyCode === DOWN_ARROW_KEY_CODE) {
-        e.preventDefault();
-        handleRefs[nextItemId].current.focus();
-      }
+    if (prevItemId && keyCode === UP_ARROW_KEY_CODE) {
+      handleRefs[prevItemId].current.focus();
+    }
+    if (nextItemId && keyCode === DOWN_ARROW_KEY_CODE) {
+      handleRefs[nextItemId].current.focus();
+    }
+
+    if (keyCode === RIGHT_ARROW_KEY_CODE) {
+      e.preventDefault();
+      itemRefs[itemId].current.focus();
     }
   };
 
@@ -156,6 +168,7 @@ const DraggableItem = ({
             />
             <input
               type="text"
+              placeholder="Cmd + Del to delete"
               ref={itemRef}
               onKeyDown={handleKeydown}
               value={item.text}
@@ -173,7 +186,7 @@ const DraggableItem = ({
           color: black;
         }
         .item input {
-          height: 40px;
+          height: ${itemHeight};
           width: 60vw;
           padding-left: 0.5rem;
           font-size: 2rem;
@@ -182,6 +195,14 @@ const DraggableItem = ({
           border: none;
           transition: color 240ms ease-out;
           transition: box-shadow 240ms ease-out;
+        }
+        .item input::placeholder {
+          opacity: 0;
+        }
+        .item input:focus::placeholder {
+          font-weight: 400;
+          font-size: 1rem;
+          opacity: 0.6;
         }
         .dragging input {
           box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
@@ -210,7 +231,7 @@ const DraggableItem = ({
         }
         .delete-item {
           opacity: 0;
-          line-height: 40px;
+          line-height: ${itemHeight};
           cursor: pointer;
           font-size: 1rem;
           margin-right: 16px;
