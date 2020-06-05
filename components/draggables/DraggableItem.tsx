@@ -115,7 +115,7 @@ const DraggableItem = ({
       }
     }
     if (keyCode === LEFT_ARROW_KEY_CODE) {
-      if (itemRef.current.selectionStart === 0) {
+      if (itemRef.current.selectionStart === 0 && itemRef.current.selectionEnd === 0) {
         e.preventDefault();
         itemHandleRefs[itemId].current.focus();
       }
