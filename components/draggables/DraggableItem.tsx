@@ -40,9 +40,9 @@ const DraggableItem = ({
     setItems,
     itemRefs,
     setItemRefs,
-    handleRefs,
-    setHandleRefs,
-    focussedId,
+    itemHandleRefs,
+    setItemHandleRefs,
+    focussedItemId,
   } = useContext(ViewContext);
   const set = sets[setId];
   const item = items[itemId];
@@ -55,8 +55,8 @@ const DraggableItem = ({
 
   useEffect(() => {
     setItemRefs(prev => ({ ...prev, [itemId]: itemRef }));
-    setHandleRefs(prev => ({ ...prev, [itemId]: handleRef }));
-    if (focussedId === itemId) {
+    setItemHandleRefs(prev => ({ ...prev, [itemId]: handleRef }));
+    if (focussedItemId === itemId) {
       itemRef.current.focus();
     }
   }, []);
@@ -115,7 +115,7 @@ const DraggableItem = ({
     if (keyCode === LEFT_ARROW_KEY_CODE) {
       if (itemRef.current.selectionStart === 0) {
         e.preventDefault();
-        handleRefs[itemId].current.focus();
+        itemHandleRefs[itemId].current.focus();
       }
     }
   };
@@ -127,17 +127,17 @@ const DraggableItem = ({
     }
   };
 
-  const handleHandleKeydown = (e, isDragging) => {
+  const handleHandleKeydown = (e: React.KeyboardEvent<HTMLDivElement>, isDragging: boolean) => {
     if (isDragging) return;
     const { keyCode } = e;
 
     if (prevItemId && keyCode === UP_ARROW_KEY_CODE) {
       e.preventDefault();
-      handleRefs[prevItemId].current.focus();
+      itemHandleRefs[prevItemId].current.focus();
     }
     if (nextItemId && keyCode === DOWN_ARROW_KEY_CODE) {
       e.preventDefault();
-      handleRefs[nextItemId].current.focus();
+      itemHandleRefs[nextItemId].current.focus();
     }
 
     if (keyCode === RIGHT_ARROW_KEY_CODE) {
