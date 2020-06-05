@@ -8,7 +8,9 @@ import { ViewContext } from './context/ViewContextProvider';
 import DraggableSet, { DragDropType } from './draggables/DraggableSet';
 
 const App = () => {
-  const { currentView, setCurrentView, sets, setSets, setItems } = useContext(ViewContext);
+  const { currentView, setCurrentView, sets, setSets, setItems, setFocussedItemId } = useContext(
+    ViewContext,
+  );
 
   const handleLogout = () => {
     firebase.auth().signOut();
@@ -23,6 +25,7 @@ const App = () => {
     setItems(prev => ({ ...prev, [newItem.id]: newItem }));
     newItem.save();
     newSet.save();
+    setFocussedItemId(newItem.id);
   };
 
   if (!currentView) {

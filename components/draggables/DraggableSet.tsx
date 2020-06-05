@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useRef, useEffect } from 'react';
 import {
   Draggable,
   DraggableProvided,
@@ -8,7 +8,11 @@ import {
   DroppableProvided,
   DroppableStateSnapshot,
 } from 'react-beautiful-dnd';
-import { UP_ARROW_KEY_CODE } from '../../constants/keyCode';
+import {
+  UP_ARROW_KEY_CODE,
+  DOWN_ARROW_KEY_CODE,
+  RIGHT_ARROW_KEY_CODE,
+} from '../../constants/keyCode';
 import Item from '../../data/data_model/item';
 import View from '../../data/data_model/view';
 import { ViewContext } from '../context/ViewContextProvider';
@@ -27,6 +31,7 @@ interface IProps {
 
 const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
   const addItemRef = useRef();
+  const setHandleRef = useRef<HTMLDivElement>();
 
   const {
     currentView,
@@ -36,8 +41,18 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
     items,
     setItems,
     itemRefs,
-    setFocussedId,
+    itemHandleRefs,
+    setHandleRefs,
+    setSetHandleRefs,
+    setFocussedItemId,
   } = useContext(ViewContext);
+
+  const prevSetId = currentView.setIds[setIndex - 1];
+  const nextSetId = currentView.setIds[setIndex + 1];
+
+  useEffect(() => {
+    setSetHandleRefs(prev => ({ ...prev, [setId]: setHandleRef }));
+  }, []);
 
   const set = sets[setId];
   if (!set) return null;
@@ -60,7 +75,7 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
       [setId]: set.addItem(newItem.id),
     }));
     newItem.save();
-    setFocussedId(newItem.id);
+    setFocussedItemId(newItem.id);
   };
 
   const handleAddItemKeydown = e => {
@@ -69,6 +84,24 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
     if (keyCode === UP_ARROW_KEY_CODE) {
       e.preventDefault();
       lastItemRef.current.focus();
+    }
+  };
+
+  const setHandleKeydown = (e: React.KeyboardEvent<HTMLDivElement>, isDragging: boolean) => {
+    if (isDragging) return;
+
+    const { keyCode } = e;
+    if (prevSetId && keyCode === UP_ARROW_KEY_CODE) {
+      e.preventDefault();
+      setHandleRefs[prevSetId].current.focus();
+    }
+    if (nextSetId && keyCode === DOWN_ARROW_KEY_CODE) {
+      e.preventDefault();
+      setHandleRefs[nextSetId].current.focus();
+    }
+    if (keyCode === RIGHT_ARROW_KEY_CODE) {
+      e.preventDefault();
+      itemHandleRefs[sets[setId].itemIds[0]].current.focus();
     }
   };
 
@@ -87,7 +120,14 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
             {...setsDraggableProvided.draggableProps}
             ref={setsDraggableProvided.innerRef}
           >
-            <div className="set-handle" {...setsDraggableProvided.dragHandleProps} />
+            <div
+              className="set-handle"
+              {...setsDraggableProvided.dragHandleProps}
+              ref={setHandleRef}
+              onKeyDown={e => {
+                setHandleKeydown(e, setsDraggableSnapshot.isDragging);
+              }}
+            />
             <Droppable droppableId={setId} type={DragDropType.ITEM}>
               {(
                 itemsDroppableProvided: DroppableProvided,
@@ -111,6 +151,7 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
                           addItem={addItem}
                           deleteSet={deleteSet}
                           addItemRef={addItemRef}
+                          setHandleRef={setHandleRef}
                           isDraggingOverSet={itemsDroppableSnapshot.isDraggingOver}
                         />
                       );

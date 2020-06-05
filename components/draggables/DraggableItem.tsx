@@ -21,6 +21,7 @@ interface IProps {
   addItem: () => void;
   deleteSet: () => void;
   addItemRef: RefObject<HTMLButtonElement>;
+  setHandleRef: RefObject<HTMLDivElement>;
   isDraggingOverSet: boolean;
 }
 
@@ -31,6 +32,7 @@ const DraggableItem = ({
   addItem,
   deleteSet,
   addItemRef,
+  setHandleRef,
   isDraggingOverSet,
 }: IProps) => {
   const {
@@ -40,9 +42,9 @@ const DraggableItem = ({
     setItems,
     itemRefs,
     setItemRefs,
-    handleRefs,
-    setHandleRefs,
-    focussedId,
+    itemHandleRefs,
+    setItemHandleRefs,
+    focussedItemId,
   } = useContext(ViewContext);
   const set = sets[setId];
   const item = items[itemId];
@@ -55,8 +57,8 @@ const DraggableItem = ({
 
   useEffect(() => {
     setItemRefs(prev => ({ ...prev, [itemId]: itemRef }));
-    setHandleRefs(prev => ({ ...prev, [itemId]: handleRef }));
-    if (focussedId === itemId) {
+    setItemHandleRefs(prev => ({ ...prev, [itemId]: handleRef }));
+    if (focussedItemId === itemId) {
       itemRef.current.focus();
     }
   }, []);
@@ -79,7 +81,7 @@ const DraggableItem = ({
     }
   };
 
-  const handleKeydown = e => {
+  const inputKeydown = e => {
     const { keyCode, metaKey, target } = e;
 
     if (metaKey && keyCode === DELETE_KEY_CODE && !target.value) {
@@ -115,7 +117,7 @@ const DraggableItem = ({
     if (keyCode === LEFT_ARROW_KEY_CODE) {
       if (itemRef.current.selectionStart === 0) {
         e.preventDefault();
-        handleRefs[itemId].current.focus();
+        itemHandleRefs[itemId].current.focus();
       }
     }
   };
@@ -127,20 +129,26 @@ const DraggableItem = ({
     }
   };
 
-  const handleHandleKeydown = (e, isDragging) => {
+  const itemHandleKeydown = (e: React.KeyboardEvent<HTMLDivElement>, isDragging: boolean) => {
     if (isDragging) return;
     const { keyCode } = e;
 
     if (prevItemId && keyCode === UP_ARROW_KEY_CODE) {
-      handleRefs[prevItemId].current.focus();
+      e.preventDefault();
+      itemHandleRefs[prevItemId].current.focus();
     }
     if (nextItemId && keyCode === DOWN_ARROW_KEY_CODE) {
-      handleRefs[nextItemId].current.focus();
+      e.preventDefault();
+      itemHandleRefs[nextItemId].current.focus();
     }
 
     if (keyCode === RIGHT_ARROW_KEY_CODE) {
       e.preventDefault();
       itemRefs[itemId].current.focus();
+    }
+    if (keyCode === LEFT_ARROW_KEY_CODE) {
+      e.preventDefault();
+      setHandleRef.current.focus();
     }
   };
 
@@ -163,14 +171,14 @@ const DraggableItem = ({
               {...itemsDraggableProvided.dragHandleProps}
               ref={handleRef}
               onKeyDown={e => {
-                handleHandleKeydown(e, itemsDraggableSnapshot.isDragging);
+                itemHandleKeydown(e, itemsDraggableSnapshot.isDragging);
               }}
             />
             <input
               type="text"
               placeholder="Cmd + Del to delete"
               ref={itemRef}
-              onKeyDown={handleKeydown}
+              onKeyDown={inputKeydown}
               value={item.text}
               onChange={handleChange}
               onBlur={handleBlur}

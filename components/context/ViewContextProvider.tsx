@@ -12,10 +12,10 @@ interface IProps {
   setItems: React.Dispatch<React.SetStateAction<Item>>;
   itemRefs: { [id: string]: RefObject<HTMLInputElement> };
   setItemRefs: React.Dispatch<React.SetStateAction<RefObject<HTMLInputElement>>>;
-  handleRefs: { [id: string]: RefObject<HTMLInputElement> };
-  setHandleRefs: React.Dispatch<React.SetStateAction<RefObject<HTMLInputElement>>>;
-  focussedId: string;
-  setFocussedId: React.Dispatch<React.SetStateAction<string>>;
+  itemHandleRefs: { [id: string]: RefObject<HTMLInputElement> };
+  setItemHandleRefs: React.Dispatch<React.SetStateAction<RefObject<HTMLInputElement>>>;
+  focussedItemId: string;
+  setFocussedItemId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // @ts-ignore
@@ -26,8 +26,14 @@ export const ViewContextProvider = ({ children }) => {
   const [sets, setSets] = useState<{ [id: string]: Set }>({});
   const [items, setItems] = useState<{ [id: string]: Item }>({});
   const [itemRefs, setItemRefs] = useState<{ [id: string]: RefObject<HTMLInputElement> }>({});
-  const [handleRefs, setHandleRefs] = useState<{ [id: string]: RefObject<HTMLInputElement> }>({});
-  const [focussedId, setFocussedId] = useState<string>('');
+  const [itemHandleRefs, setItemHandleRefs] = useState<{
+    [id: string]: RefObject<HTMLDivElement>;
+  }>({});
+  const [setHandleRefs, setSetHandleRefs] = useState<{ [id: string]: RefObject<HTMLDivElement> }>(
+    {},
+  );
+
+  const [focussedItemId, setFocussedItemId] = useState<string>('');
 
   const value = {
     currentView,
@@ -38,10 +44,12 @@ export const ViewContextProvider = ({ children }) => {
     setItems,
     itemRefs,
     setItemRefs,
-    handleRefs,
+    itemHandleRefs,
+    setItemHandleRefs,
     setHandleRefs,
-    focussedId,
-    setFocussedId,
+    setSetHandleRefs,
+    focussedItemId,
+    setFocussedItemId,
   };
 
   return <ViewContext.Provider value={value}>{children}</ViewContext.Provider>;
