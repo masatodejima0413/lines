@@ -14,8 +14,8 @@ interface IProps {
   setItemRefs: React.Dispatch<React.SetStateAction<RefObject<HTMLInputElement>>>;
   itemHandleRefs: { [id: string]: RefObject<HTMLInputElement> };
   setItemHandleRefs: React.Dispatch<React.SetStateAction<RefObject<HTMLInputElement>>>;
-  focussedItemId: string;
-  setFocussedItemId: React.Dispatch<React.SetStateAction<string>>;
+  focussedItemId: string | null;
+  setFocussedItemId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 // @ts-ignore

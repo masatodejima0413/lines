@@ -44,6 +44,7 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
     itemHandleRefs,
     setHandleRefs,
     setSetHandleRefs,
+    focussedItemId,
     setFocussedItemId,
   } = useContext(ViewContext);
 
@@ -78,9 +79,10 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
     setFocussedItemId(newItem.id);
   };
 
+  const lastItemId = set.itemIds[set.itemIds.length - 1];
   const handleAddItemKeydown = e => {
     const { keyCode } = e;
-    const lastItemRef = itemRefs[set.itemIds[set.itemIds.length - 1]];
+    const lastItemRef = itemRefs[lastItemId];
     if (keyCode === UP_ARROW_KEY_CODE) {
       e.preventDefault();
       lastItemRef.current.focus();
@@ -232,13 +234,15 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
         }
         .set:focus-within .add-item::before {
           content: 'Cmd + Enter to add';
-          color: darkgray;
+          color: ${lastItemId === focussedItemId ? 'darkgray' : 'transparent'};
         }
         .set:focus-within .add-item:hover::before {
           content: 'Add item';
+          color: darkgrey;
         }
-        .add-item:focus::before {
+        .set:focus-within .add-item:focus::before {
           content: 'Press Enter to add' !important;
+          color: darkgrey;
           text-decoration: underline;
         }
         .add-item:hover {
