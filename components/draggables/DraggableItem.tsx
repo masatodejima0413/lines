@@ -21,6 +21,7 @@ interface IProps {
   addItem: () => void;
   deleteSet: () => void;
   addItemRef: RefObject<HTMLButtonElement>;
+  setHandleRef: RefObject<HTMLDivElement>;
   isDraggingOverSet: boolean;
 }
 
@@ -31,6 +32,7 @@ const DraggableItem = ({
   addItem,
   deleteSet,
   addItemRef,
+  setHandleRef,
   isDraggingOverSet,
 }: IProps) => {
   const {
@@ -79,7 +81,7 @@ const DraggableItem = ({
     }
   };
 
-  const handleKeydown = e => {
+  const inputKeydown = e => {
     const { keyCode, metaKey, target } = e;
 
     if (metaKey && keyCode === DELETE_KEY_CODE && !target.value) {
@@ -127,7 +129,7 @@ const DraggableItem = ({
     }
   };
 
-  const handleHandleKeydown = (e: React.KeyboardEvent<HTMLDivElement>, isDragging: boolean) => {
+  const itemHandleKeydown = (e: React.KeyboardEvent<HTMLDivElement>, isDragging: boolean) => {
     if (isDragging) return;
     const { keyCode } = e;
 
@@ -143,6 +145,10 @@ const DraggableItem = ({
     if (keyCode === RIGHT_ARROW_KEY_CODE) {
       e.preventDefault();
       itemRefs[itemId].current.focus();
+    }
+    if (keyCode === LEFT_ARROW_KEY_CODE) {
+      e.preventDefault();
+      setHandleRef.current.focus();
     }
   };
 
@@ -165,14 +171,14 @@ const DraggableItem = ({
               {...itemsDraggableProvided.dragHandleProps}
               ref={handleRef}
               onKeyDown={e => {
-                handleHandleKeydown(e, itemsDraggableSnapshot.isDragging);
+                itemHandleKeydown(e, itemsDraggableSnapshot.isDragging);
               }}
             />
             <input
               type="text"
               placeholder="Cmd + Del to delete"
               ref={itemRef}
-              onKeyDown={handleKeydown}
+              onKeyDown={inputKeydown}
               value={item.text}
               onChange={handleChange}
               onBlur={handleBlur}
