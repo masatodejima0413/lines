@@ -45,6 +45,7 @@ const DraggableItem = ({
     itemHandleRefs,
     setItemHandleRefs,
     focussedItemId,
+    setFocussedItemId,
   } = useContext(ViewContext);
   const set = sets[setId];
   const item = items[itemId];
@@ -87,6 +88,7 @@ const DraggableItem = ({
     if (metaKey && keyCode === DELETE_KEY_CODE && !target.value) {
       e.preventDefault();
       deleteItem();
+      setFocussedItemId(null);
       if (!isFirstItem) {
         itemRefs[prevItemId].current.focus();
       }
@@ -115,7 +117,7 @@ const DraggableItem = ({
       }
     }
     if (keyCode === LEFT_ARROW_KEY_CODE) {
-      if (itemRef.current.selectionStart === 0) {
+      if (itemRef.current.selectionStart === 0 && itemRef.current.selectionEnd === 0) {
         e.preventDefault();
         itemHandleRefs[itemId].current.focus();
       }
@@ -127,6 +129,7 @@ const DraggableItem = ({
     if (item.text !== trimmedText) {
       setItems(prev => ({ ...prev, [itemId]: item.update(trimmedText) }));
     }
+    setFocussedItemId(null);
   };
 
   const itemHandleKeydown = (e: React.KeyboardEvent<HTMLDivElement>, isDragging: boolean) => {
@@ -182,6 +185,7 @@ const DraggableItem = ({
               value={item.text}
               onChange={handleChange}
               onBlur={handleBlur}
+              onFocus={() => setFocussedItemId(itemId)}
             />
             <button tabIndex={-1} type="button" className="delete-item" onClick={deleteItem}>
               Delete
