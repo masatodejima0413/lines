@@ -1,18 +1,17 @@
 import { omit } from 'lodash';
-import React, { ChangeEvent, useContext, useRef, useEffect, RefObject } from 'react';
+import React, { ChangeEvent, RefObject, useContext, useEffect, useRef } from 'react';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from 'react-beautiful-dnd';
-import { ViewContext } from '../context/ViewContextProvider';
 import {
   DELETE_KEY_CODE,
+  DOWN_ARROW_KEY_CODE,
   ENTER_KEY_CODE,
   ESC_KEY_CODE,
-  UP_ARROW_KEY_CODE,
-  DOWN_ARROW_KEY_CODE,
-  RIGHT_ARROW_KEY_CODE,
   LEFT_ARROW_KEY_CODE,
+  RIGHT_ARROW_KEY_CODE,
+  UP_ARROW_KEY_CODE,
 } from '../../constants/keyCode';
-
-export const itemHeight = '42px';
+import { ViewContext } from '../context/ViewContextProvider';
+import { DeleteButton, ItemContainer, ItemHandle, ItemInput } from './item.styles';
 
 interface IProps {
   itemId: string;
@@ -156,106 +155,42 @@ const DraggableItem = ({
   };
 
   return (
-    <>
-      <Draggable key={itemId} draggableId={itemId} index={index}>
-        {(
-          itemsDraggableProvided: DraggableProvided,
-          itemsDraggableSnapshot: DraggableStateSnapshot,
-        ) => (
-          <div
-            className={`item ${itemsDraggableSnapshot.isDragging ? 'dragging' : ''} ${
-              isDraggingOverSet ? 'dragging-over-set' : ''
-            }`}
-            {...itemsDraggableProvided.draggableProps}
-            ref={itemsDraggableProvided.innerRef}
-          >
-            <div
-              className="handle"
-              {...itemsDraggableProvided.dragHandleProps}
-              ref={handleRef}
-              onKeyDown={(e) => {
-                itemHandleKeydown(e, itemsDraggableSnapshot.isDragging);
-              }}
-            />
-            <input
-              type="text"
-              placeholder="Cmd + Del to delete"
-              ref={itemRef}
-              onKeyDown={inputKeydown}
-              value={item.text}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              onFocus={() => setFocussedItemId(itemId)}
-            />
-            <button tabIndex={-1} type="button" className="delete-item" onClick={deleteItem}>
-              Delete
-            </button>
-          </div>
-        )}
-      </Draggable>
-      <style jsx>{`
-        .item:first-of-type input {
-          color: black;
-        }
-        .item input {
-          height: ${itemHeight};
-          width: 60vw;
-          padding-left: 0.5rem;
-          font-size: 2rem;
-          color: #646464;
-          font-weight: 800;
-          border: none;
-          transition: color 240ms ease-out;
-          transition: box-shadow 240ms ease-out;
-        }
-        .item input::placeholder {
-          opacity: 0;
-        }
-        .item input:focus::placeholder {
-          font-weight: 400;
-          font-size: 1rem;
-          opacity: 0.6;
-        }
-        .dragging input {
-          box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-        }
-        .item {
-          padding: 4px 0;
-          display: flex;
-          align-items: center;
-        }
-        .item .handle {
-          width: 8px;
-          align-self: stretch;
-          background-color: lightgray;
-          opacity: 0;
-          transition: opacity 80ms ease-out;
-        }
-        .item .handle:hover,
-        .item .handle:focus {
-          opacity: 1;
-        }
-        .item:hover .handle {
-          opacity: 1;
-        }
-        .dragging-over-set:hover .handle {
-          opacity: 0;
-        }
-        .delete-item {
-          opacity: 0;
-          line-height: ${itemHeight};
-          cursor: pointer;
-          font-size: 1rem;
-          margin-right: 16px;
-        }
-        .delete-item:hover {
-          text-decoration: underline;
-        }
-        .item:hover .delete-item {
-          opacity: 0.4;
-        }
-      `}</style>
-    </>
+    <Draggable key={itemId} draggableId={itemId} index={index}>
+      {(
+        itemsDraggableProvided: DraggableProvided,
+        itemsDraggableSnapshot: DraggableStateSnapshot,
+      ) => (
+        <ItemContainer
+          className="item"
+          {...itemsDraggableProvided.draggableProps}
+          ref={itemsDraggableProvided.innerRef}
+        >
+          <ItemHandle
+            className="handle"
+            isDraggingOverSet={isDraggingOverSet}
+            {...itemsDraggableProvided.dragHandleProps}
+            ref={handleRef}
+            onKeyDown={(e) => {
+              itemHandleKeydown(e, itemsDraggableSnapshot.isDragging);
+            }}
+          />
+          <ItemInput
+            type="text"
+            placeholder="Cmd + Del to delete"
+            ref={itemRef}
+            onKeyDown={inputKeydown}
+            value={item.text}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            onFocus={() => setFocussedItemId(itemId)}
+            isDragging={itemsDraggableSnapshot.isDragging}
+          />
+          <DeleteButton tabIndex={-1} type="button" className="delete-item" onClick={deleteItem}>
+            Delete
+          </DeleteButton>
+        </ItemContainer>
+      )}
+    </Draggable>
   );
 };
 
