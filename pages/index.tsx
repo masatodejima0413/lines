@@ -10,23 +10,24 @@ import { setConverter } from '../data/data_model/set';
 import View, { viewConverter } from '../data/data_model/view';
 
 const Home = () => {
+  const [isAuthenticating, setIsAuthenticating] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
   const { setCurrentView, setSets, setItems } = useContext(ViewContext);
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged(loginUser => {
+    firebase.auth().onAuthStateChanged((loginUser) => {
       if (loginUser) {
         setUser(loginUser);
         Views.where('userId', '==', loginUser.uid)
           .limit(1)
           .get()
-          .then(snapshot => {
+          .then((snapshot) => {
             if (snapshot.empty) {
               const newView = new View({});
               newView.save();
               setCurrentView(newView);
             } else {
-              snapshot.forEach(doc => {
+              snapshot.forEach((doc) => {
                 const latestView = viewConverter.fromFirestore(doc);
                 setCurrentView(latestView);
               });
@@ -35,26 +36,26 @@ const Home = () => {
 
         Items.where('userId', '==', loginUser.uid)
           .get()
-          .then(snapshot => {
+          .then((snapshot) => {
             if (snapshot.empty) {
               console.log('no item found');
             } else {
-              snapshot.forEach(doc => {
+              snapshot.forEach((doc) => {
                 const loadedItem = itemConverter.fromFirestore(doc);
-                setItems(prev => ({ ...prev, [loadedItem.id]: loadedItem }));
+                setItems((prev) => ({ ...prev, [loadedItem.id]: loadedItem }));
               });
             }
           });
 
         Sets.where('userId', '==', loginUser.uid)
           .get()
-          .then(snapshot => {
+          .then((snapshot) => {
             if (snapshot.empty) {
               console.log('no set found');
             } else {
-              snapshot.forEach(doc => {
+              snapshot.forEach((doc) => {
                 const loadedSet = setConverter.fromFirestore(doc);
-                setSets(prev => ({ ...prev, [loadedSet.id]: loadedSet }));
+                setSets((prev) => ({ ...prev, [loadedSet.id]: loadedSet }));
               });
             }
           });
@@ -62,8 +63,14 @@ const Home = () => {
         console.log('loginUser is null');
         setUser(null);
       }
+      setIsAuthenticating(false);
     });
   }, []);
+
+  if (isAuthenticating) {
+    return <h1>⏱</h1>;
+  }
+
   return (
     <div>
       <Head>

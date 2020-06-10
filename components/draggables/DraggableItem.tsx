@@ -57,8 +57,8 @@ const DraggableItem = ({
   const nextItemId = set.itemIds[index + 1];
 
   useEffect(() => {
-    setItemRefs(prev => ({ ...prev, [itemId]: itemRef }));
-    setItemHandleRefs(prev => ({ ...prev, [itemId]: handleRef }));
+    setItemRefs((prev) => ({ ...prev, [itemId]: itemRef }));
+    setItemHandleRefs((prev) => ({ ...prev, [itemId]: handleRef }));
     if (focussedItemId === itemId) {
       itemRef.current.focus();
     }
@@ -68,21 +68,21 @@ const DraggableItem = ({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newText = e.target.value;
-    setItems(prev => ({ ...prev, [itemId]: item.update(newText) }));
+    setItems((prev) => ({ ...prev, [itemId]: item.update(newText) }));
   };
 
   const deleteItem = () => {
     items[itemId].delete();
     setItems(omit(items, [itemId]));
-    const updatedItemIds = sets[setId].itemIds.filter(id => id !== itemId);
+    const updatedItemIds = sets[setId].itemIds.filter((id) => id !== itemId);
     if (updatedItemIds.length > 0) {
-      setSets(prev => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
+      setSets((prev) => ({ ...prev, [setId]: sets[setId].update(updatedItemIds) }));
     } else {
       deleteSet();
     }
   };
 
-  const inputKeydown = e => {
+  const inputKeydown = (e) => {
     const { keyCode, metaKey, target } = e;
 
     if (metaKey && keyCode === DELETE_KEY_CODE && !target.value) {
@@ -127,7 +127,7 @@ const DraggableItem = ({
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const trimmedText = e.target.value.trim();
     if (item.text !== trimmedText) {
-      setItems(prev => ({ ...prev, [itemId]: item.update(trimmedText) }));
+      setItems((prev) => ({ ...prev, [itemId]: item.update(trimmedText) }));
     }
     setFocussedItemId(null);
   };
@@ -173,7 +173,7 @@ const DraggableItem = ({
               className="handle"
               {...itemsDraggableProvided.dragHandleProps}
               ref={handleRef}
-              onKeyDown={e => {
+              onKeyDown={(e) => {
                 itemHandleKeydown(e, itemsDraggableSnapshot.isDragging);
               }}
             />

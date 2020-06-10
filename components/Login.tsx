@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ENTER_KEY_CODE } from '../constants/keyCode';
 import firebase from '../libs/firebase';
 
 const Login = () => {
@@ -9,10 +10,10 @@ const Login = () => {
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .then(u => {
+      .then((u) => {
         console.log(u);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
     setEmail('');
@@ -23,10 +24,10 @@ const Login = () => {
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
-      .then(u => {
+      .then((u) => {
         console.log(u);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
     setEmail('');
@@ -41,7 +42,7 @@ const Login = () => {
             type="email"
             name="email"
             value={email}
-            onChange={e => {
+            onChange={(e) => {
               setEmail(e.target.value);
             }}
           />
@@ -52,8 +53,14 @@ const Login = () => {
             type="password"
             name="password"
             value={password}
-            onChange={e => {
+            onChange={(e) => {
               setPassword(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              const { keyCode } = e;
+              if (keyCode === ENTER_KEY_CODE) {
+                handleLogin();
+              }
             }}
           />
         </div>

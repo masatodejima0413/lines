@@ -35,7 +35,7 @@ const DragDropContextProvider = ({
           draggableId,
           array: set.itemIds,
         });
-        setSets(prev => ({ ...prev, [set.id]: set.update(updatedItemIds) }));
+        setSets((prev) => ({ ...prev, [set.id]: set.update(updatedItemIds) }));
       }
       if (type === DragDropType.SET) {
         const updatedSetIds = move.inSameField({
@@ -48,7 +48,7 @@ const DragDropContextProvider = ({
         //  setCurrentView(updatedView)
         //  ↑ not working!!
         currentView.update(updatedSetIds);
-        setCurrentView(prev => new View({ ...prev, setIds: updatedSetIds }));
+        setCurrentView((prev) => new View({ ...prev, setIds: updatedSetIds }));
       }
     } else {
       if (type === DragDropType.ITEM) {
@@ -61,7 +61,7 @@ const DragDropContextProvider = ({
           sourceArray: sourceSet.itemIds,
           destArray: destSet.itemIds,
         });
-        setSets(prev => ({
+        setSets((prev) => ({
           ...prev,
           [sourceSet.id]: sourceSet.update(startIds),
           [destSet.id]: destSet.update(finishIds),

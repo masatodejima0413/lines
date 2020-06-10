@@ -52,7 +52,7 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
   const nextSetId = currentView.setIds[setIndex + 1];
 
   useEffect(() => {
-    setSetHandleRefs(prev => ({ ...prev, [setId]: setHandleRef }));
+    setSetHandleRefs((prev) => ({ ...prev, [setId]: setHandleRef }));
   }, []);
 
   const set = sets[setId];
@@ -61,17 +61,17 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
   const deleteSet = () => {
     set.delete(currentView.id);
     setSets(omit(sets, [setId]));
-    const updatedSetIds = currentView.setIds.filter(id => id !== setId);
-    setCurrentView(prev => new View({ ...prev, setIds: updatedSetIds }));
-    set.itemIds.forEach(itemId => {
+    const updatedSetIds = currentView.setIds.filter((id) => id !== setId);
+    setCurrentView((prev) => new View({ ...prev, setIds: updatedSetIds }));
+    set.itemIds.forEach((itemId) => {
       setItems(omit(items, [itemId]));
     });
   };
 
   const addItem = () => {
     const newItem = new Item({});
-    setItems(prev => ({ ...prev, [newItem.id]: newItem }));
-    setSets(prev => ({
+    setItems((prev) => ({ ...prev, [newItem.id]: newItem }));
+    setSets((prev) => ({
       ...prev,
       [setId]: set.addItem(newItem.id),
     }));
@@ -80,7 +80,7 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
   };
 
   const lastItemId = set.itemIds[set.itemIds.length - 1];
-  const handleAddItemKeydown = e => {
+  const handleAddItemKeydown = (e) => {
     const { keyCode } = e;
     const lastItemRef = itemRefs[lastItemId];
     if (keyCode === UP_ARROW_KEY_CODE) {
@@ -126,7 +126,7 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
               className="set-handle"
               {...setsDraggableProvided.dragHandleProps}
               ref={setHandleRef}
-              onKeyDown={e => {
+              onKeyDown={(e) => {
                 setHandleKeydown(e, setsDraggableSnapshot.isDragging);
               }}
             />

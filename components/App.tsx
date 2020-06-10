@@ -21,8 +21,8 @@ const App = () => {
     const newSet = new Set({ itemIds: [newItem.id] });
     const updatedView = currentView.addSet(newSet.id);
     setCurrentView(updatedView);
-    setSets(prev => ({ ...prev, [newSet.id]: newSet }));
-    setItems(prev => ({ ...prev, [newItem.id]: newItem }));
+    setSets((prev) => ({ ...prev, [newSet.id]: newSet }));
+    setItems((prev) => ({ ...prev, [newItem.id]: newItem }));
     newItem.save();
     newSet.save();
     setFocussedItemId(newItem.id);
