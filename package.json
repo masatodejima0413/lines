@@ -10,6 +10,8 @@
     "type-check": "tsc --project tsconfig.json"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.28",
+    "@emotion/styled": "^10.0.27",
     "firebase": "^7.15.0",
     "lodash": "^4.17.15",
     "next": "9.4.4",

@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import React, { useContext, useRef, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import {
   Draggable,
   DraggableProvided,
@@ -9,14 +9,15 @@ import {
   DroppableStateSnapshot,
 } from 'react-beautiful-dnd';
 import {
-  UP_ARROW_KEY_CODE,
   DOWN_ARROW_KEY_CODE,
   RIGHT_ARROW_KEY_CODE,
+  UP_ARROW_KEY_CODE,
 } from '../../constants/keyCode';
 import Item from '../../data/data_model/item';
 import View from '../../data/data_model/view';
 import { ViewContext } from '../context/ViewContextProvider';
-import DraggableItem, { itemHeight } from './DraggableItem';
+import DraggableItem from '../item';
+import { itemHeight } from '../item/item.styles';
 
 export enum DragDropType {
   SET = 'SET',
