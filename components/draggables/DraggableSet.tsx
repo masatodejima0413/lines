@@ -184,14 +184,13 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
       <style jsx>{`
         .set {
           display: flex;
-          padding: 20px 0;
+          padding: 8px 0;
         }
         .set-handle {
-          width: 8px;
+          width: 16px;
           align-self: stretch;
-          background-color: lightgray;
+          background-color: #000;
           opacity: 0;
-          transition: opacity 80ms ease-out;
           margin-right: 8px;
         }
         .set-handle:hover,
@@ -225,7 +224,7 @@ const DraggableSet = ({ setId, setIndex, isDraggingOverView }: IProps) => {
           background-color: transparent;
           color: transparent;
           font-size: 1rem;
-          width: 60vw;
+          width: 80vw;
           line-height: ${itemHeight};
           padding: 4px 16px 4px;
         }

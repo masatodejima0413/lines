@@ -86,12 +86,10 @@ const Home = () => {
           font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
             Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
         }
-
         * {
           box-sizing: border-box;
         }
         *:focus {
-          filter: invert(100%);
           outline: none;
         }
         button {

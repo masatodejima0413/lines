@@ -1,9 +1,10 @@
 import styled from '@emotion/styled';
 
-export const itemHeight = '42px';
+export const itemHeight = '48px';
+export const borderWidth = '4px';
 
 export const ItemContainer = styled('div')`
-  padding: 4px 0;
+  padding: 0px 0;
   display: flex;
   align-items: center;
   :hover {
@@ -16,16 +17,18 @@ export const ItemContainer = styled('div')`
   }
 `;
 
-export const ItemInput = styled('input')<{ isDragging: boolean }>`
+export const ItemInput = styled('input')<{ isDragging: boolean; isFirstItem: boolean }>`
   height: ${itemHeight};
-  width: 60vw;
+  width: 80vw;
   padding-left: 0.5rem;
   font-size: 2rem;
-  color: #646464;
+  color: ${({ isFirstItem }) => (isFirstItem ? '#000' : '#646464')};
   font-weight: 800;
   border: none;
   transition: color 240ms ease-out;
   transition: box-shadow 240ms ease-out;
+  box-shadow: ${({ isDragging }) => (isDragging ? `0 0 15px rgba(0, 0, 0, 0.3)` : ``)};
+  border: transparent solid ${borderWidth};
   &::placeholder {
     opacity: 0;
   }
@@ -34,7 +37,9 @@ export const ItemInput = styled('input')<{ isDragging: boolean }>`
     font-size: 1rem;
     opacity: 0.6;
   }
-  box-shadow: ${({ isDragging }) => (isDragging ? `0 0 15px rgba(0, 0, 0, 0.3)` : ``)};
+  &:focus {
+    border: black solid ${borderWidth};
+  }
 `;
 
 export const DeleteButton = styled('button')`
@@ -49,13 +54,14 @@ export const DeleteButton = styled('button')`
 `;
 
 export const ItemHandle = styled('div')<{ isDraggingOverSet: boolean }>`
-  width: 8px;
-  align-self: stretch;
-  background-color: lightgray;
+  width: 16px;
+  height: ${itemHeight};
+  background-color: #000;
+  border: black solid 4px;
   opacity: 0;
-  transition: opacity 80ms ease-out;
   :hover,
   :focus {
     opacity: 1;
+    background-color: #fff;
   }
 `;

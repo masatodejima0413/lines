@@ -183,6 +183,7 @@ const DraggableItem = ({
             onChange={handleChange}
             onBlur={handleBlur}
             onFocus={() => setFocussedItemId(itemId)}
+            isFirstItem={isFirstItem}
             isDragging={itemsDraggableSnapshot.isDragging}
           />
           <DeleteButton tabIndex={-1} type="button" className="delete-item" onClick={deleteItem}>
