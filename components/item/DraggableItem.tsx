@@ -12,7 +12,8 @@ import {
   UP_ARROW_KEY_CODE,
 } from '../../constants/keyCode';
 import { ViewContext } from '../context/ViewContextProvider';
-import { DeleteButton, ItemContainer, ItemHandle, ItemInput, StyledPicker } from './item.styles';
+import { DeleteButton, ItemContainer, ItemHandle, ItemInput } from './item.styles';
+import EmojiPicker from '../emoji/emojiPicker';
 
 interface IProps {
   itemId: string;
@@ -159,7 +160,7 @@ const DraggableItem = ({
 
   const selectEmoji = (emoji) => {
     setItems((prev) => ({ ...prev, [itemId]: item.updateEmojiId(emoji.id) }));
-    setIsOpenEmojiPicker(!isOpenEmojiPicker);
+    setIsOpenEmojiPicker(!setIsOpenEmojiPicker);
   };
 
   return (
@@ -188,11 +189,9 @@ const DraggableItem = ({
             onClick={() => setIsOpenEmojiPicker(!isOpenEmojiPicker)}
           />
           {isOpenEmojiPicker && (
-            <Picker
-              title="Pick your emoji…"
-              emoji="point_up"
+            <EmojiPicker
               onSelect={(emoji) => selectEmoji(emoji)}
-              style={{ position: 'absolute', zIndex: '99', left: '50px', top: '50px' }}
+              close={() => setIsOpenEmojiPicker(false)}
             />
           )}
           <ItemInput
