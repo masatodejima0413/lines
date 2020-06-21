@@ -60,7 +60,7 @@ export default class Set {
     Views.doc(viewId).update({
       setIds: firebase.firestore.FieldValue.arrayRemove(this.id),
     });
-    this.itemIds.forEach(itemId => {
+    this.itemIds.forEach((itemId) => {
       Items.doc(itemId)
         .delete()
         .then(() => console.log('Success: delete item'))

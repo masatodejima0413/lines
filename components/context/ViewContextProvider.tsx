@@ -1,4 +1,4 @@
-import React, { createContext, useState, RefObject } from 'react';
+import React, { createContext, useState, RefObject, ReactNode } from 'react';
 import View from '../../data/data_model/view';
 import Item from '../../data/data_model/item';
 import Set from '../../data/data_model/set';
@@ -7,21 +7,28 @@ interface IProps {
   currentView: View;
   setCurrentView: React.Dispatch<React.SetStateAction<View>>;
   sets: { [id: string]: Set };
-  setSets: React.Dispatch<React.SetStateAction<Set>>;
+  setSets: React.Dispatch<React.SetStateAction<{ [id: string]: Set }>>;
   items: { [id: string]: Item };
-  setItems: React.Dispatch<React.SetStateAction<Item>>;
+  setItems: React.Dispatch<React.SetStateAction<{ [id: string]: Item }>>;
   itemRefs: { [id: string]: RefObject<HTMLInputElement> };
-  setItemRefs: React.Dispatch<React.SetStateAction<RefObject<HTMLInputElement>>>;
-  itemHandleRefs: { [id: string]: RefObject<HTMLInputElement> };
-  setItemHandleRefs: React.Dispatch<React.SetStateAction<RefObject<HTMLInputElement>>>;
+  setItemRefs: React.Dispatch<
+    React.SetStateAction<{
+      [id: string]: React.RefObject<HTMLInputElement>;
+    }>
+  >;
+  itemHandleRefs: { [id: string]: RefObject<HTMLDivElement> };
+  setItemHandleRefs: React.Dispatch<
+    React.SetStateAction<{
+      [id: string]: React.RefObject<HTMLDivElement>;
+    }>
+  >;
   focussedItemId: string | null;
   setFocussedItemId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-// @ts-ignore
-export const ViewContext = createContext<IProps>({});
+export const ViewContext = createContext<IProps>(null!);
 
-export const ViewContextProvider = ({ children }) => {
+export const ViewContextProvider = ({ children }: { children: ReactNode }) => {
   const [currentView, setCurrentView] = useState<View>();
   const [sets, setSets] = useState<{ [id: string]: Set }>({});
   const [items, setItems] = useState<{ [id: string]: Item }>({});
