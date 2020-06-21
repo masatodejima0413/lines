@@ -7,6 +7,7 @@ export const ItemContainer = styled('div')`
   padding: 0px 0;
   display: flex;
   align-items: center;
+  position: relative;
   :hover {
     .handle {
       opacity: 1;

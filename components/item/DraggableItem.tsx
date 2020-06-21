@@ -12,7 +12,7 @@ import {
   UP_ARROW_KEY_CODE,
 } from '../../constants/keyCode';
 import { ViewContext } from '../context/ViewContextProvider';
-import { DeleteButton, ItemContainer, ItemHandle, ItemInput } from './item.styles';
+import { DeleteButton, ItemContainer, ItemHandle, ItemInput, StyledPicker } from './item.styles';
 
 interface IProps {
   itemId: string;
@@ -182,17 +182,17 @@ const DraggableItem = ({
               itemHandleKeydown(e, itemsDraggableSnapshot.isDragging);
             }}
           />
-          <div
-            style={{ width: '24px', height: '24px' }}
+          <Emoji
+            emoji={item.emojiId}
+            size={24}
             onClick={() => setIsOpenEmojiPicker(!isOpenEmojiPicker)}
-          >
-            <Emoji emoji={item.emojiId} size={24} />
-          </div>
+          />
           {isOpenEmojiPicker && (
             <Picker
               title="Pick your emoji…"
               emoji="point_up"
               onSelect={(emoji) => selectEmoji(emoji)}
+              style={{ position: 'absolute', zIndex: '99', left: '50px', top: '50px' }}
             />
           )}
           <ItemInput

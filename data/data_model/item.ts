@@ -15,7 +15,7 @@ export default class Item {
     createdAt = firebase.firestore.Timestamp.now(),
     updatedAt = firebase.firestore.Timestamp.now(),
     text = '',
-    emojiId = '',
+    emojiId = 'new',
     userId = firebase.auth().currentUser.uid,
   }: {
     id?: string;
