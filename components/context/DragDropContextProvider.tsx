@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { DragDropType } from '../draggables/DraggableSet';
+import { DragDropType } from '../set/DraggableSet';
 import View from '../../data/data_model/view';
 
 interface IProps {
