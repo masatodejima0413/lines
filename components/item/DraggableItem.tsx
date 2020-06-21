@@ -1,5 +1,6 @@
+import { Emoji, Picker } from 'emoji-mart';
 import { omit } from 'lodash';
-import React, { ChangeEvent, RefObject, useContext, useEffect, useRef } from 'react';
+import React, { ChangeEvent, RefObject, useContext, useEffect, useRef, useState } from 'react';
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from 'react-beautiful-dnd';
 import {
   DELETE_KEY_CODE,
@@ -54,6 +55,8 @@ const DraggableItem = ({
   const isLastItem = index === set.itemIds.length - 1;
   const prevItemId = set.itemIds[index - 1];
   const nextItemId = set.itemIds[index + 1];
+
+  const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState(false);
 
   useEffect(() => {
     setItemRefs((prev) => ({ ...prev, [itemId]: itemRef }));
@@ -154,6 +157,11 @@ const DraggableItem = ({
     }
   };
 
+  const selectEmoji = (emoji) => {
+    setItems((prev) => ({ ...prev, [itemId]: item.updateEmojiId(emoji.id) }));
+    setIsOpenEmojiPicker(!isOpenEmojiPicker);
+  };
+
   return (
     <Draggable key={itemId} draggableId={itemId} index={index}>
       {(
@@ -174,6 +182,19 @@ const DraggableItem = ({
               itemHandleKeydown(e, itemsDraggableSnapshot.isDragging);
             }}
           />
+          <div
+            style={{ width: '24px', height: '24px' }}
+            onClick={() => setIsOpenEmojiPicker(!isOpenEmojiPicker)}
+          >
+            <Emoji emoji={item.emojiId} size={24} />
+          </div>
+          {isOpenEmojiPicker && (
+            <Picker
+              title="Pick your emoji…"
+              emoji="point_up"
+              onSelect={(emoji) => selectEmoji(emoji)}
+            />
+          )}
           <ItemInput
             type="text"
             placeholder="Cmd + Del to delete"

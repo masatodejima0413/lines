@@ -7,6 +7,7 @@ export default class Item {
   createdAt: firebase.firestore.Timestamp;
   updatedAt: firebase.firestore.Timestamp;
   text: string;
+  emojiId: string;
   userId: string;
 
   constructor({
@@ -14,18 +15,21 @@ export default class Item {
     createdAt = firebase.firestore.Timestamp.now(),
     updatedAt = firebase.firestore.Timestamp.now(),
     text = '',
+    emojiId = '',
     userId = firebase.auth().currentUser.uid,
   }: {
     id?: string;
     createdAt?: firebase.firestore.Timestamp;
     updatedAt?: firebase.firestore.Timestamp;
     text?: string;
+    emojiId?: string;
     userId?: string;
   }) {
     this.id = id;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.text = text;
+    this.emojiId = emojiId;
     this.userId = userId;
   }
 
@@ -45,6 +49,15 @@ export default class Item {
     return this;
   }
 
+  updateEmojiId(emojiId: string) {
+    this.emojiId = emojiId;
+    Items.doc(this.id)
+      .update({ emojiId, updatedAt: firebase.firestore.Timestamp.now() })
+      .then(() => console.log('Success: updateEmojiId item'))
+      .catch(() => console.error('Error: updateEmojiId item.'));
+    return this;
+  }
+
   delete() {
     Items.doc(this.id)
       .delete()
@@ -61,6 +74,7 @@ export const itemConverter = {
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
       text: item.text,
+      emojiId: item.emojiId,
       userId: item.userId,
     };
   },
@@ -71,6 +85,7 @@ export const itemConverter = {
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
       text: data.text,
+      emojiId: data.emojiId,
       userId: data.userId,
     });
   },
