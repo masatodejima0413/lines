@@ -5,7 +5,7 @@ import Item from '../data/data_model/item';
 import Set from '../data/data_model/set';
 import DragDropContextProvider from './context/DragDropContextProvider';
 import { ViewContext } from './context/ViewContextProvider';
-import DraggableSet, { DragDropType } from './draggables/DraggableSet';
+import DraggableSet, { DragDropType } from './set';
 
 const App = () => {
   const { currentView, setCurrentView, sets, setSets, setItems, setFocussedItemId } = useContext(
