@@ -22,6 +22,12 @@ interface IProps {
       [id: string]: React.RefObject<HTMLDivElement>;
     }>
   >;
+  setHandleRefs: { [id: string]: RefObject<HTMLDivElement> };
+  setSetHandleRefs: React.Dispatch<
+    React.SetStateAction<{
+      [id: string]: React.RefObject<HTMLDivElement>;
+    }>
+  >;
   focussedItemId: string | null;
   setFocussedItemId: React.Dispatch<React.SetStateAction<string | null>>;
 }
